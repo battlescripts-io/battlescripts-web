@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Match Viewer</title>
+  <script src="../lib/resizer.js"></script>
+  <link rel="stylesheet" href="../css/theme.css">
+  <link rel="stylesheet" href="/fonts/media-icons/css/media.css">
+  <script src="/lib/vue.js"></script>
+  <script src="/lib/vue-battlescripts.js"></script>
+  <script src="../monaco/min/vs/loader.js"></script>
+  <script src="../lib/monaco.js"></script>
+  <script src="../lib/util.js"></script>
+  <script>module={};</script><script src="/lib/battlescripts.js"></script><script>const battlescripts = module.exports;module=undefined;</script>
+  <script src="runner.js"></script>
+  <script src="view.js"></script>
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color:#1E1E1E;
+      color:#d4d4d4;
+    }
+    [v-cloak] { display:none; }
+    .layout {
+      width:100vw;
+      height:100vh;
+      margin:0;
+      padding:0;
+      overflow:hidden;
+    }
+    #match-wrap {
+      display:flex;
+      align-items:stretch;
+      flex-direction:row;
+    }
+    #game-wrap {
+      display:flex;
+      align-items:stretch;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    #game-wrap > * {
+      flex:0 0 50%;
+    }
+    .horizontal {
+      flex-direction:row !important;
+    }
+    .vertical {
+      flex-direction:column !important;
+    }
+    /* Vertical by default, side-by-side if wide */
+    @media screen and (min-width: 800px) {
+      #game-wrap {
+        flex-direction:row;
+      }
+    }
+    .controls {
+      flex:0 0 50px;
+      padding:5px;
+      text-align:center;
+    }
+    .controls > * {
+      font-weight:normal;
+      font-family:Consolas, monospace;
+      margin: 0 5px;
+      padding:2px 5px;
+      user-select: none;
+    }
+    #canvas-play {
+      font-weight:bold;
+      border:2px solid white;
+    }
+    .canvas, .inspector {
+      flex:1;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+    }
+    .newwindow::after {
+      content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8%2F9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAF0WlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDUgNzkuMTYzNDk5LCAyMDE4LzA4LzEzLTE2OjQwOjIyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdEV2dD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlRXZlbnQjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnBob3Rvc2hvcD0iaHR0cDovL25zLmFkb2JlLmNvbS9waG90b3Nob3AvMS4wLyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDIxLTA2LTA0VDE2OjIxOjUyLTA1OjAwIiB4bXA6TWV0YWRhdGFEYXRlPSIyMDIxLTA2LTA0VDE2OjIxOjUyLTA1OjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAyMS0wNi0wNFQxNjoyMTo1Mi0wNTowMCIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo1ZjdlODEzYy0yNDhkLTAyNGYtOGU5MC1lYzI3ODQ0M2IwMGEiIHhtcE1NOkRvY3VtZW50SUQ9ImFkb2JlOmRvY2lkOnBob3Rvc2hvcDpmNjZjOTg5NC0zOTE3LTQ1NGQtOTdhZC02NTRmZDQxNjg4ZjUiIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo3YjdjOWMzYy1mZjMxLWYzNDYtODU1My1iMTQwZWIxZWExMjgiIGRjOmZvcm1hdD0iaW1hZ2UvcG5nIiBwaG90b3Nob3A6Q29sb3JNb2RlPSIzIj4gPHhtcE1NOkhpc3Rvcnk%2BIDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDo3YjdjOWMzYy1mZjMxLWYzNDYtODU1My1iMTQwZWIxZWExMjgiIHN0RXZ0OndoZW49IjIwMjEtMDYtMDRUMTY6MjE6NTItMDU6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE5IChXaW5kb3dzKSIvPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0ic2F2ZWQiIHN0RXZ0Omluc3RhbmNlSUQ9InhtcC5paWQ6NWY3ZTgxM2MtMjQ4ZC0wMjRmLThlOTAtZWMyNzg0NDNiMDBhIiBzdEV2dDp3aGVuPSIyMDIxLTA2LTA0VDE2OjIxOjUyLTA1OjAwIiBzdEV2dDpzb2Z0d2FyZUFnZW50PSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoV2luZG93cykiIHN0RXZ0OmNoYW5nZWQ9Ii8iLz4gPC9yZGY6U2VxPiA8L3htcE1NOkhpc3Rvcnk%2BIDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY%2BIDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8%2BA%2BuX8AAAAEdJREFUOMvt0zsOADAIAlDuf2m6m6Jg15q4Pj9RkISZ10CYzwAUMEXbAReVkQJqbAtodzYBag8WINtOAWyBbqwPFMD5BXlMB12VSuCpiX%2F%2BAAAAAElFTkSuQmCC);
+      margin-left:5px;
+    }
+
+    .gameListItem {
+      margin:10px;
+      padding:5px;
+      cursor:pointer;
+    }
+    .gameSelected {
+      background-color:#008F11;
+      color:white;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app" v-cloak class="layout">
+  <div id="match-wrap" class="layout flex">
+    <div id="game-list" v-if="match" style="flex:0 0 40px;">
+      <div v-for="(matchGameState, index) in match.output.state" class="gameListItem" :class="{gameSelected:index==gameIndex}" style="white-space:nowrap;" @click="viewGame(index)">
+        Game {{index+1}}
+      </div>
+    </div>
+    <div id="game-wrap" style="flex:1 1 auto;" :class="{ horizontal:'horizontal'==options.orientation, vertical:'vertical'==options.orientation }" v-show="loaded">
+      <div :style="{flex:'0 0 '+options.split+'%'}" class="canvas flex-vertical" v-show="loaded">
+        <div style="flex:0 0 25px;text-align:right;" v-show="!!options.showPopoutLink && !ispopup">
+          <div class="newwindow" onclick="popout()" style="cursor:pointer;" title="Open the game renderer and debugger in a new window">Open in window</div>
+        </div>
+
+        <iframe v-if="canvas_url" id="canvas" :src="canvas_url"></iframe>
+        <div class="controls">
+          <div id="canvas-pause" class="button" onclick="matchController.pause()" title="Pause"><span class="icon-pause"></span></div>
+          <div id="canvas-play" class="button" onclick="play()" title="Play"><span v-if="options.density!='compact'">PLAY </span><span class="icon-play"></span></div>
+          <div id="canvas-step" class="button" onclick="matchController.step()" title="Step Forward"><span class="icon-to-end"></span></div>
+
+          <div id="canvas-back" class="button" onclick="matchController.previousMove()" title="Previous State"><span class="icon-fast-bw"></span><span v-if="options.density!='compact'"> Prev</span></div>
+          <div id="canvas-forward" class="button" onclick="matchController.nextMove()" title="Next State"><span v-if="options.density!='compact'">Next </span><span class="icon-fast-fw"></span></div>
+          <div class="match-state-display flex">
+            <span id="matchStateIndex" style="margin:0 5px;"></span> <input style="flex:1;" type="range" id="matchStateControl" oninput="matchController.gotoMove(this.value,false)" min="0" max="0" value="0"> <span style="margin:0 5px;" id="matchStateTotal"></span>
+          </div>
+        </div>
+      </div>
+      <div :style="{flex:'0 0 '+(100-options.split)+'%'}" class="inspector flex-vertical" v-show="!!options.showInspectorPanel && loaded">
+        <div class="tabs">
+          <div class="tab" :class="{active:!error&&tab=='state'}" @click="select_tab('state')">State</div>
+          <div class="tab" :class="{active:!error&&tab=='gamedirective'}" v-show="!!options.showGameDirectiveInspectorTab" @click="select_tab('gamedirective')">Directive</div>
+          <div class="tab" :class="{active:!error&&tab=='lastmove'}" v-show="!!options.showMoveInspectorTab" @click="select_tab('lastmove')">Move</div>
+          <div class="tab" :class="{active:!error&&tab=='results'}" v-show="!!options.showResultsInspectorTab" @click="select_tab('results')">Results</div>
+          <div class="tab" :class="{active:!error&&tab=='log'}" v-show="!!options.showLogInspectorTab" @click="select_tab('log')">Log</div>
+          <div class="tab" v-show="error" :class="{active:error}">Error</div>
+        </div>
+        <div style="flex:1;" style="max-width:100%;" id="state" v-show="!error && (tab=='state')" class="monaco-editor" language="json"></div>
+        <div style="flex:1;" id="gamedirective" v-show="!error && (tab=='gamedirective')" class="monaco-editor" language="json"></div>
+        <div style="flex:1;" id="results" v-show="!error && (tab=='results')" class="monaco-editor" language="json"></div>
+        <div style="flex:1;" id="lastmove" v-show="!error && (tab=='lastmove')" class="monaco-editor" language="json"></div>
+        <div style="flex:1;" id="log" v-show="!error && (tab=='log')" class="monaco-editor" language="text"></div>
+        <div style="flex:1;" id="Error" v-show="error">{{error}}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

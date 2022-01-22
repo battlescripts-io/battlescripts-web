@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html class="container">
+<head>
+  <title>BattleScripts</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/theme.css">
+  <script src="/lib/auth0.js"></script>
+  <script src="/lib/battlescripts-api.js"></script>
+  <script src="/lib/vue.js"></script>
+  <script src="/lib/vue-battlescripts.js"></script>
+  <script src="/lib/util.js"></script>
+
+  <script src="/match/match_runner.js"></script>
+  <script src="main.js"></script>
+  <style>
+    html,body {
+      background-color:#eee;
+      color:black;
+    }
+    .player-row, .match-row {
+      cursor:pointer;
+    }
+    .player-row:hover {
+      background-color:#ddd;
+    }
+    .match-row:hover {
+      background-color:#ccc;
+    }
+    .higlightedPlayer {
+      color: #008f11;
+    }
+  </style>
+</head>
+<body>
+
+<div id="app">
+  <bs-user></bs-user>
+  <div v-cloak v-show="loaded">
+    <div v-if="game">
+      <a href="/index.html" alt="Home" class="logo-home"><img src="/images/logo-home.png"></a>
+
+      <h1 class="title">{ {{game.game_name}} }</h1>
+      <a href="index.html">&lt;-- All Games</a>
+      <p>Last Updated: {{ago(game.updated_on)}}</p>
+
+      <p><b>Click a results row to view matches,</b> then click a match to watch it.</p>
+
+      <div v-show="!popout" id="viewer" style="float:right;width:500px;height:90vh;"></div>
+      <table style="">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Player Name</th>
+            <th>Author</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="row in game.leaderboard">
+            <tr class="player-row" @click="toggle(row, game.game_id, row.id)" title="click to view match details">
+              <td :rowspan="(row.expanded)?2:1">{{row.rank}}</td>
+              <td>{{row.name}}</td>
+              <td>{{row.author_name}}</td>
+              <td>{{row.score}}</td>
+            </tr>
+            <tr v-show="row.matches && row.expanded">
+              <td colspan=99 style="background-color:#aaa;">
+                <div style="font-weight:bold;">Match Summary</div>
+                <table v-if="row.matches" style="width:100%;background-color:#eee;">
+                  <tr>
+                    <th></th>
+                    <th>Player 1</th>
+                    <th></th>
+                    <th>Player 2</th>
+                    <th></th>
+                  </tr>
+                  <template v-for="match in row.matches.matches">
+                    <tr class="match-row" @click="view(match, match.id)" title="Click to view match">
+                      <td>
+                        <span v-if="match.players[0].score==match.players[1].score">Draw</span>
+                        <span v-else-if="match.players[0].id==row.id && match.players[0].score>match.players[1].score">WIN</span>
+                        <span v-else-if="match.players[1].id==row.id && match.players[1].score>match.players[0].score">WIN</span>
+                        <span v-else>Lose</span>
+                        <span> ( {{match.players[0].score}}-{{match.players[1].score}} )</span>
+                      </td>
+                      <td :class="{higlightedPlayer:match.players[0].id==row.id}">{{match.players[0].name}} (#{{match.players[0].rank}})</td>
+                      <td>vs</td>
+                      <td :class="{higlightedPlayer:match.players[1].id==row.id}">{{match.players[1].name}} (#{{match.players[1].rank}})</td>
+                    </tr>
+                  </template>
+                </table>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+
+      <br style=clear:both;">
+    </div>
+
+    <div v-if="!game">
+      <a href="/index.html" alt="Home" class="logo-home"><img src="/images/logo-home.png"></a>
+      <h1 class="title">{Leaderboards}</h1>
+
+      <h2>Overall Leaderboard</h2>
+
+      <p>The overall leaderboard is an aggregate of the individual game leaderboards. Your rank in each game contributes to your overall score, where lower is better. In the case of a tie score between users, the person with more players ranks higher.</p>
+
+      <p>To climb the overall leaderboard, try to write winning players for many games!</p>
+
+      <div v-if="leaderboard">
+        <p>Last Updated {{ago(leaderboard.updated_on)}}</p>
+        <table>
+          <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th># Players</th>
+            <th>Score</th>
+          </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in leaderboard.leaderboard">
+              <td>{{user.rank}}</td>
+              <td>{{user.author_name}}</td>
+              <td>{{user.games}}</td>
+              <td>{{user.score}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Game Leaderboards</h2>
+
+      <p>Select a game to view its individual leaderboard.</p>
+
+      <div v-for="game in games" class="game-card" style="clear:both;margin:30px 10px;">
+        <a :href="'?'+game.id" style="text-decoration:none;color:black;">
+          <div class="game-card-thumbnail" style="float:left;margin-right:20px;"><img :src="data_url+'/images/'+game.id+'-300.png'" style="max-width:64px;"></div>
+          <div style="font-weight:bold;line-height:64px;font-size:28px;"> {{game.name}}</div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

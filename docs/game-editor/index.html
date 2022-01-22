@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BattleScripts Game Editor</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="/lib/resizer.js"></script>
+  <script src="/lib/showdown.js"></script>
+  <script>
+    showdown.setFlavor('github');
+    var markdownConverter = new showdown.Converter();
+  </script>
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/editor.css">
+  <link rel="stylesheet" href="style.css">
+  <script>module={};</script><script src="/lib/battlescripts.js"></script><script>const battlescripts = module.exports;module=undefined;</script>
+</head>
+<body>
+
+<script src="/lib/auth0.js"></script>
+<script src="/lib/battlescripts-api.js"></script>
+<script src="/lib/vue.js"></script>
+<script src="/lib/vue-battlescripts.js"></script>
+<script src="/monaco/min/vs/loader.js"></script>
+<script src="/lib/monaco.js"></script>
+<script src="/lib/util.js"></script>
+<script src="/match/match_runner.js"></script>
+<script src="main.js"></script>
+<div id="app">
+  <div v-cloak v-show="loaded" v-if="game">
+    <div class="flex-vertical layout">
+
+      <div class="header">
+        <a href="/index.html" alt="Home" class="logo-home"><img src="/images/logo-home.png"></a>
+        <bs-user style="float:right;"></bs-user>
+        <div style="float:right;margin-right:75px;" class="buttons">
+
+          <button v-if="game && game.updated_on && (!game.published_on || game.updated_on>game.published_on)" class="button large" onclick="publish()">Publish<div class="note">Saved {{saved_ago}}</div></button>
+          <button v-else class="button disabled large">Publish</button>
+
+          <button v-if="dirty" class="button large" onclick="save_game()">Save</button>
+          <button v-else class="button disabled large" >Save</button>
+
+        </div>
+        <div v-show="typeof game.id=='number'"><h1>{{game.name}}</h1></div>
+        <div v-show="typeof game.id!='number'"><h1>Create Game</h1></div>
+      </div>
+
+      <div class="content flex-horizontal">
+
+        <div class="files">
+          <div class="directory">Game/</div>
+          <div class="file" @click="file('game-info')" :class="{active:view=='game-info'}">Info</div>
+          <div class="file" @click="file('game-code')" :class="{active:view=='game-code'}">Code</div>
+          <div class="file" @click="file('game-docs')" :class="{active:view=='game-docs'}">README.md</div>
+          <div class="file" @click="file('game-player-template')" :class="{active:view=='game-player-template'}">Player Template</div>
+
+          <div class="directory">Test Players/</div>
+          <div class="file" @click="file('game-players')" :class="{active:view=='game-players'}">Test Players</div>
+
+          <div class="directory">Renderer/</div>
+          <div class="file" @click="file('renderer-code')" :class="{active:view=='renderer-code'}">index.js</div>
+          <div class="file" @click="file('renderer-html')" :class="{active:view=='renderer-html'}">index.html</div>
+          <div class="file" @click="file('renderer-css')" :class="{active:view=='renderer-css'}">style.css</div>
+
+          <div class="directory">Reference/</div>
+          <div class="file" @click="file('docs-howto-game')" :class="{active:view=='docs-howto-game'}">HOWTO</div>
+          <div class="file" @click="file('docs-game-api')" :class="{active:view=='docs-game-api'}">Game API</div>
+          <div class="file" @click="file('docs-player-api')" :class="{active:view=='docs-player-api'}">Player API</div>
+          <div class="file" @click="file('docs-renderer-api')" :class="{active:view=='docs-renderer-api'}">Renderer API</div>
+
+          <div class="directory settings" @click="file('settings')" style="cursor:pointer;font-weight:normal;">
+            <svg class="settings-gear" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 13.616v-3.232c-1.651-.587-2.694-.752-3.219-2.019v-.001c-.527-1.271.1-2.134.847-3.707l-2.285-2.285c-1.561.742-2.433 1.375-3.707.847h-.001c-1.269-.526-1.435-1.576-2.019-3.219h-3.232c-.582 1.635-.749 2.692-2.019 3.219h-.001c-1.271.528-2.132-.098-3.707-.847l-2.285 2.285c.745 1.568 1.375 2.434.847 3.707-.527 1.271-1.584 1.438-3.219 2.02v3.232c1.632.58 2.692.749 3.219 2.019.53 1.282-.114 2.166-.847 3.707l2.285 2.286c1.562-.743 2.434-1.375 3.707-.847h.001c1.27.526 1.436 1.579 2.019 3.219h3.232c.582-1.636.75-2.69 2.027-3.222h.001c1.262-.524 2.12.101 3.698.851l2.285-2.286c-.744-1.563-1.375-2.433-.848-3.706.527-1.271 1.588-1.44 3.221-2.021zm-12 2.384c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"/></svg>
+            Settings</div>
+
+        </div>
+        <div class="resizer"></div>
+        <div class="editors flex-horizontal">
+
+          <div v-show="view=='game-info'" class="manifest">
+            <div>
+              <table class="noborder">
+                <tr v-show="game.id || game.id===0"><th>id:</th><td>{{game.id}}</td></tr>
+                <tr><th>Name:</th><td><input v-model="game.name" maxlength="30" v-maxlength-counter/></td></tr>
+                <tr><th>Description:</th><td><textarea v-model="game.description" maxlength="255" v-maxlength-counter></textarea></td></tr>
+                <tr><th>Min Players:</th><td><input v-model="game.min_players" type="number" style="width:100px;"></td></tr>
+                <tr><th>Max Players:</th><td><input v-model="game.max_players" type="number" style="width:100px;"></td></tr>
+                <tr><th>Version:</th><td><input v-model="game.version" maxlength="10" v-maxlength-counter style="width:100px;"></td></tr>
+                <tr><th>Difficulty (1-5):</th><td><input v-model="game.difficulty" type="number" style="width:100px;"></td></tr>
+                <tr><th>Author ID:</th><td>{{game.author}}</td></tr>
+                <tr><th>Author Name:</th><td>{{game.author_name}}</td></tr>
+                <tr><th>Created:</th><td>{{ago(game.created_on)}}</td></tr>
+                <tr><th>Updated:</th><td>{{ago(game.updated_on)}}</td></tr>
+              </table>
+            </div>
+          </div>
+          <div v-show="view=='game-code'" id="game-code" class="monaco-editor full-panel" model="game" attribute="code" language="javascript"></div>
+          <div v-show="view=='game-docs'" id="game-documentation" class="monaco-editor" editor-config='{"wordWrap":"on"}' model="game" attribute="documentation" language="markdown"></div>
+          <div v-show="view=='game-player-template'" id="game-player-template" class="monaco-editor" model="game" attribute="player_template" language="javascript"></div>
+          <div class="flex-vertical" v-show="view=='game-players'" id="game-test-players">
+            <div id="p1" class="monaco-editor test-player-editor" model="game" attribute="test_players" index="0" language="javascript"></div>
+            <div id="p2" class="monaco-editor test-player-editor" model="game" attribute="test_players" index="1" language="javascript"></div>
+          </div>
+          <div v-show="view=='renderer-code'" id="renderer-code" class="monaco-editor" model="game" attribute="renderer_code" language="javascript"></div>
+          <div v-show="view=='renderer-html'" id="renderer-html" class="monaco-editor" model="game" attribute="renderer_html" language="html"></div>
+          <div v-show="view=='renderer-css'" id="renderer-css" class="monaco-editor" model="game" attribute="renderer_css" language="css"></div>
+          <div v-show="view=='docs-howto-game'" id="docs-howto-game" class="markdown-output"></div>
+          <div v-show="view=='docs-game-api'" id="docs-game-api" class="markdown-output"></div>
+          <div v-show="view=='docs-player-api'" id="docs-player-api" class="markdown-output"></div>
+          <div v-show="view=='docs-renderer-api'" id="docs-renderer-api" class="markdown-output"></div>
+          <div v-show="view=='settings'" id="settings">
+            <div>
+              <input type="checkbox" v-model="settings.run_on_change"> Auto-run game as you change code in editors
+            </div>
+            <div>
+              Delay between moves: <input v-model="settings.delay" type="number" size="5" onchange="setMatchConfig()">ms
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Panels -->
+        <div class="resizer" data-resize="next" v-show="view!=='game-docs' && !popout && !popout"></div>
+        <div id="match-runner-view" style="flex:0 0 400px;" v-show="view!=='game-docs' && !popout"></div>
+
+        <div class="resizer" data-resize="next" v-show="view=='game-docs'"></div>
+        <div style="flex:0 0 50%;overflow:auto;" id="details-markdown" v-show="view=='game-docs'">
+          <div id="game-documentation-view" class="markdown-output"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

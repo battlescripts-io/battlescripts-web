@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+</head>
+<body>
+
+<div id="container" style="width:800px;height:600px;border:1px solid grey"></div>
+
+<script src="min/vs/loader.js"></script>
+<script>
+  let code = `
+function test() {
+  console.log('hello world');
+}
+  `;
+  require.config({ paths: { 'vs': 'min/vs' }});
+  require(['vs/editor/editor.main'], function() {
+    // validation settings
+    monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: true,
+      noSyntaxValidation: false
+    });
+
+    // compiler options
+    monaco.languages.typescript.javascriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ES6,
+      allowNonTsExtensions: true
+    });
+
+    let editor = monaco.editor.create(document.getElementById('container'), {
+      value: '',
+      language: 'javascript',
+
+      theme: "vs-dark",
+      scrollBeyondLastLine: false,
+      scrollbar: {
+        verticalHasArrows: true,
+        horizontalHasArrows: true,
+        vertical: 'visible',
+      }
+    });
+
+    editor.setValue(code);
+    console.log(editor.getValue());
+  });
+</script>
+</body>
+</html>

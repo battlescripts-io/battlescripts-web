@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BattleScripts Player Editor</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/editor.css">
+
+  <script src="/lib/resizer.js"></script>
+  <script src="/lib/showdown.js"></script>
+  <script>
+    showdown.setFlavor('github');
+    var markdownConverter = new showdown.Converter();
+  </script>
+  <script src="/lib/auth0.js"></script>
+  <script src="/lib/battlescripts-api.js"></script>
+  <script src="/lib/vue.js"></script>
+  <script src="/lib/vue-battlescripts.js"></script>
+  <script src="/monaco/min/vs/loader.js"></script>
+  <script src="/lib/monaco.js"></script>
+  <script src="/lib/util.js"></script>
+  <script src="/match/match_runner.js"></script>
+  <script src="main.js"></script>
+</head>
+<body>
+
+<div id="app">
+  <div v-cloak v-show="loaded">
+    <div class="flex-vertical layout">
+
+      <div class="header">
+        <a href="/index.html" alt="Home" class="logo-home"><img src="/images/logo-home.png"></a>
+
+        <bs-user style="float:right;"></bs-user>
+        <div style="float:right;margin-right:75px;" class="buttons">
+          <span v-if="$root.userLoaded && !$root.user">Login to Save and Publish your player --&gt;</span>
+
+          <button v-if="$root.user && player && player.updated_on && (!player.published_on || player.updated_on>player.published_on)" class="button large" onclick="publish()"><span v-if="player.published_on">Re-</span>Publish<div class="note">Saved {{saved_ago}}</div></button>
+          <button v-else-if="$root.user" type="button" class="button disabled large">Publish</button>
+
+          <button v-if="$root.user && dirty" type="button" class="button large" onclick="save()">Save</button>
+          <button v-if="$root.user && !dirty" type="button" class="button disabled large" value="Save">Save</button>
+
+        </div>
+        <div v-show="typeof player.id=='number'"><h1>{{player.name}}</h1></div>
+        <div v-show="typeof player.id!='number'"><h1>{{game.name}} Player</h1></div>
+      </div>
+
+      <div class="content flex-horizontal">
+
+        <div class="files">
+          <div class="directory">Player/</div>
+          <div class="file" @click="file('player-info')" :class="{active:view=='player-info'}">Info</div>
+          <div class="file" @click="file('player-code')" :class="{active:view=='player-code'}">Code</div>
+
+          <div class="directory">Test/</div>
+          <div class="file" @click="file('test-cases')" :class="{active:view=='test-cases'}"><span v-if="player.tests && player.tests.length" style="float:right;" :class="{testFail:!tests_passed,testPass:tests_passed}">{{tests_passed?"PASS":"FAIL"}}</span>Tests</div>
+<!--          <div class="file" @click="file('test-state')" :class="{active:view=='test-state'}">Move</div>-->
+          <div class="file" @click="file('test-players')" :class="{active:view=='test-players'}">Opponents</div>
+
+          <div class="directory">Reference/</div>
+          <div class="file" @click="file('docs-game-api')" :class="{active:view=='docs-game-api'}">Game README</hint></div>
+          <div class="file" @click="file('docs-player-api')" :class="{active:view=='docs-player-api'}">Player API</div>
+
+          <div class="directory settings" @click="file('settings')" style="cursor:pointer;font-weight:normal;">
+            <svg class="settings-gear" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M24 13.616v-3.232c-1.651-.587-2.694-.752-3.219-2.019v-.001c-.527-1.271.1-2.134.847-3.707l-2.285-2.285c-1.561.742-2.433 1.375-3.707.847h-.001c-1.269-.526-1.435-1.576-2.019-3.219h-3.232c-.582 1.635-.749 2.692-2.019 3.219h-.001c-1.271.528-2.132-.098-3.707-.847l-2.285 2.285c.745 1.568 1.375 2.434.847 3.707-.527 1.271-1.584 1.438-3.219 2.02v3.232c1.632.58 2.692.749 3.219 2.019.53 1.282-.114 2.166-.847 3.707l2.285 2.286c1.562-.743 2.434-1.375 3.707-.847h.001c1.27.526 1.436 1.579 2.019 3.219h3.232c.582-1.636.75-2.69 2.027-3.222h.001c1.262-.524 2.12.101 3.698.851l2.285-2.286c-.744-1.563-1.375-2.433-.848-3.706.527-1.271 1.588-1.44 3.221-2.021zm-12 2.384c-2.209 0-4-1.791-4-4s1.791-4 4-4 4 1.791 4 4-1.791 4-4 4z"/></svg>
+            Settings</div>
+
+        </div>
+        <div class="resizer"></div>
+        <div class="editors flex-horizontal" style="overflow:hidden;">
+
+          <div v-show="when(['player-info'])" class="manifest">
+            <div>
+              <table class="noborder">
+                <tr v-show="player.id || player.id===0"><th>id:</th><td>{{player.id}}</td></tr>
+                <tr><th>Name <hint>Your player name is shown on the Leaderboard and can be humorous, taunting, etc.<br><br>Inappropriate player names wll be blocked and potentially cause your account to be locked out.</hint>:</th><td><input v-model="player.name" maxlength="30" v-maxlength-counter/></td></tr>
+                <tr><th>Description:</th><td><textarea v-model="player.description" maxlength="255" v-maxlength-counter></textarea></td></tr>
+                <tr><th>Version <hint>Version numbers are for your reference only and can be any string.</hint>:</th><td><input v-model="player.version" style="width:100px;" maxlength="10" v-maxlength-counter></td></tr>
+                <tr><th>Created:</th><td>{{ago(player.created_on)}}</td></tr>
+                <tr><th>Updated:</th><td>{{ago(player.updated_on)}}</td></tr>
+                <tr><th>Published:</th><td>{{ago(player.published_on)}}</td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div v-show="not_when(['player-info','settings','test-cases'])" id="player-code" class="monaco-editor full-panel" model="player" attribute="code" language="javascript"></div>
+
+          <div v-show="when(['test-cases'])" id="test-cases" style="flex:1;" class="flex">
+            <div style="flex:0 0 200px;padding:5px;">
+              <div class="smallheader">Test Cases <hint>Test cases allow you to enter game state JSON and what you expect your player to return as its move. Tests are run automatically when you change your player code.<br><br>Use this to add a case where you expect your player to always make the same move, like blocking a win. As you change your code, you can have confidence that you don't break these cases where the expected move is known.</hint></div>
+              <div><span class="button" href="#" @click.stop="runTests">Run Tests</span></div>
+              <p>Select a test below to edit.</p>
+              <div class="directory">Tests/</div>
+              <div v-for="(t,index) in player.tests" @click.stop="selectTest(index)" class="file" :class="{active:index===testSelected}">
+                &#149;  {{t.name}}
+              </div>
+              <div style="margin-top:10px;">
+                <span class="button" href="#" @click.stop="addTest">Create New Test</span>
+              </div>
+            </div>
+            <div style="flex:1;padding:20px;">
+              <!-- Edit Test -->
+              <div v-if="player && player.tests && player.tests.length && testSelected!=null">
+                <span class="button" style="float:right;" @click.stop="deleteTest">Delete Test</span>
+                <input v-model="player.tests[testSelected].name" style="width:80%;max-width:500px;">
+                <div class="smallheader" style="margin-top:15px;">State <hint>Use the game runner on the right to locate a specific move you want to test for, and copy the state from its debugger into the input here!</hint></div>
+                <div><textarea style="width:100%;height:50vh" v-model="player.tests[testSelected].state"></textarea></div>
+                <div class="smallheader" style="margin-top:15px;">Expected Move <hint>This can be a number, a string, an Array, or JSON - whatever format your player should respond with.</hint></div>
+                <div><textarea style="width:100%;height:10vh;" v-model="player.tests[testSelected].expect"></textarea></div>
+              </div>
+              <!-- Test Results -->
+              <div v-if="player && player.tests && player.tests.length && testSelected==null && test_results.length">
+                <div class="smallheader">Result: <span v-if="player.tests && player.tests.length" :class="{testFail:!tests_passed,testPass:tests_passed}">{{tests_passed?"PASS":"FAIL"}}</span></div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th><th>Result</th><th>Expected</th><th>Actual</th>
+                    </tr>
+                  </thead>
+                  <tr v-for="(r,index) in test_results">
+                    <td>{{player.tests[index].name}}</td>
+                    <td><span :class="{testFail:!r.passed,testPass:r.passed}">{{r.passed?"PASS":"FAIL"}}</span></td>
+                    <td>{{player.tests[index].expect}}</td>
+                    <td>{{r.output}}</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+          </div>
+
+<!--          <div v-show="when(['test-state'])" id="test-state" style="flex:0 0 250px;" class="flex-vertical console">-->
+<!--            <div class="flex-shrink smallheader">-->
+<!--              <input type="button" class="button" value="Run" onClick="test_state()" style="float:right;">-->
+<!--              Move Tester-->
+<!--              <hint position="s">-->
+<!--                <div>Test your player to see what move is made for a specific game state. Use this to debug and fix logic errors when you want your player to make a different move for a given situation, for example.</div>-->
+<!--                <div>Enter the JSON for the game state, or click copy to copy the currently-displayed state value from the game runner panel</div>-->
+<!--                <div>Optional: If your player uses player state, you can enter that as well.</div>-->
+<!--              </hint>-->
+<!--            </div>-->
+<!--            <div class="flex-shrink">-->
+<!--              <span style="float:right;font-weight:normal;font-size:smaller;cursor:pointer;" @click.stop="copyState">copy</span>-->
+<!--              Input: Game State-->
+<!--            </div>-->
+<!--            <div class="flex-grow monaco-editor" id="test_game_state" model="test_game_state" language="json" editor-mode="simple"></div>-->
+<!--            <div class="flex-shrink">Input: Player State</div>-->
+<!--            <div class="flex-grow monaco-editor" id="test_player_state" model="test_player_state" language="json" editor-mode="simple"></div>-->
+<!--            <div class="flex-shrink">Output: Player Move</div>-->
+<!--            <div class="flex-grow monaco-editor" id="test_state_output" model="test_state_output" language="json" editor-mode="simple"></div>-->
+<!--          </div>-->
+          <div v-show="when(['test-players'])" id="test-players" style="flex:0 0 250px;" class="flex-vertical console">
+            <div class="flex-shrink smallheader">
+              Opponents
+              <hint position="s">By default, your player plays against itself as you code. You can choose other players if your own to test against instead, or choose a test player from the game, if one exists.<br><br>You cannot test your player against other users during development.</hint>
+            </div>
+            <div class="flex-shrink">
+              Choose the opponent to play against in the game runner as you change code.
+              <br><br>
+              (This is a WIP, currently you can only test against yourself)
+            </div>
+            <div class="flex-grow files">
+              <div class="directory">Your Players/</div>
+              <div class="file active">this player</div>
+
+              <div class="directory">Test Players/</div>
+            </div>
+          </div>
+
+          <div v-show="when(['settings'])" id="settings">
+            <div>
+              <input type="checkbox" v-model="settings.run_on_change"> Auto-run game as you change code in editors
+            </div>
+            <div>
+              Delay between moves in game runner: <input v-model="settings.delay" type="number" size="5" onchange="play_match()">ms
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Panels -->
+        <div class="resizer" data-resize="next" v-show="!popout"></div>
+
+        <div id="match-runner-view" style="flex:0 0 400px;" v-show="not_when(['docs-game-api','docs-player-api']) && !popout"></div>
+        <div style="flex:0 0 40%;" v-show="when(['docs-game-api'])" id="docs-game-api" class="markdown-output"></div>
+        <div style="flex:0 0 40%;" v-show="when(['docs-player-api'])" id="docs-player-api" class="markdown-output"></div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</body>
+</html>

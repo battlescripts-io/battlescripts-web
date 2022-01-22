@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Battlescripts Login</title>
+</head>
+<body>
+<h1 id="msg">Please Wait...</h1>
+
+<script src="/lib/util.js"></script>
+<script src="/lib/auth0.js"></script>
+<script src="/lib/battlescripts-api.js"></script>
+<script>
+  const logged_in = async ()=>{
+    window.history.replaceState({}, document.title, "/login.html");
+    sendMessage("LOGIN");
+    window.close();
+  };
+  window.onload = async () => {
+    let user = await API.auth();
+    // If already logged in, we're done
+    if (user) {
+      document.querySelector('#msg').textContent = "Already Logged in";
+      return logged_in();
+    }
+    // If we have been redirected from Auth0 login, handle it and we're done
+    if (await API.handleAuthRedirect()) {
+      document.querySelector('#msg').textContent = "Logged in";
+      return logged_in();
+    }
+    // Otherwise redirect to Auth0 for login
+    document.querySelector('#msg').textContent = "Redirecting...";
+    API.loginWithRedirect();
+  };
+</script>
+
+</body>
+</html>

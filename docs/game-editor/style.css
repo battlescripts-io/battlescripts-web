@@ -1,0 +1,15 @@
+.test-player-editor {
+    height:500px;
+    width:100%;
+}
+.details {
+    width:400px;
+    overflow:hidden;
+    border-left:1px solid black;
+}
+
+#canvas {
+    width:100%;
+    height:100%;
+    border:none;
+}

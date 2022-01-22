@@ -1,0 +1,218 @@
+/* Styles common to any editor interface (game, player, etc) */
+
+html, body {
+    margin:0;
+    padding:0;
+    background-color:#1E1E1E;
+    color:#d4d4d4;
+    overflow:hidden;
+}
+
+/* MONACO */
+/* ====== */
+
+.monaco-editor {
+    border:1px solid #444;
+    overflow:hidden;
+    width:100%;
+}
+.monaco-editor.full-panel {
+
+}
+
+/* PANEL RESIZER */
+/* ============= */
+
+.resizer {
+    width:4px;
+    background-color:#444444;
+    cursor:col-resize;
+}
+.resizer[data-direction="vertical"] {
+    cursor:row-resize;
+    width:auto;
+    height:4px;
+}
+.resizer:hover {
+    background-color:white;
+}
+
+/* LAYOUT */
+/* ====== */
+.console {
+    font-family:montserrat, consola, monospace;
+}
+.layout {
+    width:99vw;
+    height:99vh !important;
+    padding:0;
+}
+.header {
+    height:75px;
+    background:transparent url("editor-header.png") no-repeat left top;
+    font-family:montserrat, consola, monospace;
+    padding-left:5px;
+}
+.header h1 {
+    color: #008f11;
+    font-size:50px;
+    font-weight:900;
+    line-height:60px;
+    -webkit-text-stroke: 2px black;
+    display:inline-block;
+    margin:0;
+}
+.smallheader {
+    font-family:montserrat, consola, monospace;
+    color: #008f11;
+    font-size:20px;
+    font-weight:700;
+    line-height:24px;
+    margin:0;
+}
+.buttons {
+    margin-right:50px;
+}
+.buttons .button.large {
+    height:50px;
+    margin:10px;
+    float:right;
+}
+.buttons .button.large .note {
+    font-size:small;
+    font-style:italic;
+}
+.content {
+    flex:5;
+    height:100px;
+}
+.editors {
+    flex:1 1;
+}
+.editors > * {
+    flex-grow:1;
+}
+.markdown-output {
+    background-color:#EEEED4;
+    color:black;
+    padding:5px 20px;
+    overflow:auto;
+    font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+.markdown-output pre {
+    padding: 16px;
+    overflow: auto;
+    line-height: 1.45;
+    background-color: #F6F8FA;
+    border-radius: 6px;
+}
+.markdown-output code {
+    padding: 0;
+    margin: 0;
+    font-size: 100%;
+    word-break: normal;
+    white-space: pre;
+    background: transparent;
+    border: 0;
+}
+.markdown-output img {
+    max-width:95%;
+}
+/* FILE EXPLORER */
+/* ============= */
+
+.files {
+    flex:0 0 180px;
+    padding:5px;
+    font-family:Consolas, monospace;
+    overflow:auto;
+}
+.file {
+    margin:5px 5px 3px 10px;
+    cursor:pointer;
+}
+.file.active {
+    background-color: #254E78;
+    color: rgb(174,175,173);
+}
+.file:hover {
+    background-color: #18253f;
+}
+.directory {
+    font-weight:bold;
+    margin:10px 0;
+}
+
+/* SETTINGS */
+/* ======== */
+
+.settings {
+    margin-top:20px;
+}
+.settings-gear {
+    fill:#ccc;
+    height:12px;
+    width:12px;
+    cursor:pointer;
+}
+#settings {
+    padding:20px;
+    font-size:larger;
+    font-family:montserrat, consola, monospace;
+}
+#settings > * {
+    margin:20px 0;
+}
+
+/* MANIFEST */
+/* ======== */
+
+.manifest {
+    padding:20px;
+    /*font-family:Consolas, monospace;*/
+    background-color:#EEEED4;
+    color:black;
+}
+.manifest table {
+    width:100%;
+    border-spacing: 1px;
+    border-collapse: separate;
+}
+.manifest th {
+    text-align:right;
+    padding-right:10px;
+    padding-bottom:15px;
+    width:0;
+    font-weight:normal;
+    white-space:nowrap;
+}
+.manifest tr {
+    margin:0;
+}
+.manifest th, .manifest td {
+    vertical-align:top;
+    margin:0;
+    padding:2px;
+}
+.manifest textarea {
+    width:50%;
+    height:100px;
+    font-family:Consolas, monospace;
+}
+.manifest input {
+    width:75%;
+    font-family:Consolas, monospace;
+    font-size:100%;
+}
+
+/* OTHER */
+/* ===== */
+.testFail {
+    color:red;
+    font-weight:bold;
+}
+.testPass {
+    color:#008F11;
+}

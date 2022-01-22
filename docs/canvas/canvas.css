@@ -1,0 +1,16 @@
+/* Default Style Reset */
+/* Define some default player colors so games can look consistent across the site if they choose to */
+:root {
+    --p1: #008F11;
+    --p2: #CE7E4B;
+    --p3: green;
+    --p4: orange;
+    --p5: pink;
+    --p6: yellow;
+}
+
+html, body {
+    padding:0;
+    margin:0;
+    background-color: #fbfbfb;
+}

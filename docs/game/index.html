@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html class="container">
+<head>
+  <title>BS</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="/lib/showdown.js"></script>
+  <link rel="stylesheet" href="/css/theme.css">
+  <script src="/lib/auth0.js"></script>
+  <script src="/lib/battlescripts-api.js"></script>
+  <script src="/lib/vue.js"></script>
+  <script src="/lib/vue-battlescripts.js"></script>
+  <script src="/lib/util.js"></script>
+  <script src="/match/match_runner.js"></script>
+
+  <script>
+    // Pre-define data attributes so Vue can detect changes
+    let data = {
+      game: {},
+    };
+
+    showdown.setFlavor('github');
+    var markdownConverter = new showdown.Converter();
+
+    // Init Vue
+    createVueApp(data, {
+      methods: {
+        getGameImage: (id)=>{ return API.getGameImage(id); }
+      }
+    }, init);
+
+    async function init() {
+      let id = document.location.search.replace(/^\?/,'');
+      if (id!==null && typeof id!=="undefined" && id!=="") {
+        let game = await API.getPublishedGame(id);
+
+        // Populate reference panels with rendered markdown
+        game.documentationHtml = markdownConverter.makeHtml( game.documentation );
+
+        document.title="BS: "+game.name;
+        $vm.game = game;
+
+        // Example match runner
+        let matchRunner = MatchRunner.create({
+          mount:'#match',
+          options: {
+            showPopoutLink: false,
+            orientation:"horizontal",
+            split:50,
+            density:"compact"
+          }
+        });
+        matchRunner.update({
+          game:game,
+          startMatch:true,
+          matchConfig: {
+            game:game.code,
+            players: [game.test_players[0], game.test_players[1]],
+            games:1
+          }
+        });
+      }
+      else {
+        $vm.game = null;
+      }
+    }
+  </script>
+  <style>
+    html, body {
+      background-color:white;
+      color:black;
+    }
+    #match {
+      width:90vw;
+      height:300px;
+      border:1px solid #aaa;
+    }
+    @media screen and (min-width: 1200px) {
+      #match {
+        width:750px;
+        float:right;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+<a href="/index.html" alt="Home" class="logo-home"><img src="/images/logo-home.png"></a>
+
+<div id="app">
+  <bs-user></bs-user>
+  <div v-if="!game.id">Loading...</div>
+  <div v-cloak v-show="game.id">
+    <h1 class="title">{ {{game.name}} }</h1>
+    <p>Version {{game.version}} by {{game.author_name}}</p>
+    <div id="match"></div>
+    <p>{{game.description}}</p>
+    <div>
+      <a :href="'/leaderboard/index.html?'+game.id" class="button">View Leaderboard</a>
+      <a :href="'/player/index.html?game='+game.id" class="button">Create Player</a>
+      <a href="/me/index.html" class="button">My Players</a>
+    </div>
+
+    <div id="documentation" v-html="game.documentationHtml"></div>
+
+  </div>
+</div>
+
+
+</body>
+</html>

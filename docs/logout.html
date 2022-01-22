@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Battlescripts Logout</title>
+</head>
+<body>
+<h1 id="msg">Please Wait...</h1>
+<script src="/lib/util.js"></script>
+<script src="/lib/auth0.js"></script>
+<script src="/lib/battlescripts-api.js"></script>
+<script>
+  window.onload = async () => {
+    let auth0session = await API.getCurrentAuth0Session();
+    if (auth0session) {
+      API.logoutWithRedirect();
+    }
+    else {
+      API.unauth();
+      sendMessage("LOGOUT");
+      window.close();
+    }
+  };
+</script>
+
+</body>
+</html>

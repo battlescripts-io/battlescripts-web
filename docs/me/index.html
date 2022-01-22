@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html class="container">
+<head>
+  <title>BattleScripts: User Account</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/theme.css">
+  <script src="/lib/auth0.js"></script>
+  <script src="/lib/battlescripts-api.js"></script>
+  <script src="/lib/vue.js"></script>
+  <script src="/lib/vue-battlescripts.js"></script>
+  <script src="/lib/util.js"></script>
+  <script>
+    async function delete_player(id,index) {
+      if (confirm("Are you sure you want to delete this player?\nTHIS CANNOT BE UNDONE!")) {
+        try {
+          await API.deletePlayer(id);
+          Message("Player Deleted");
+          $vm.players.players[index].deleted = true;
+        } catch(e) {
+          MessageError("Error: "+e);
+        }
+      }
+    }
+    async function unpublish_player(id,index) {
+      if (confirm("Are you sure you want to unpublish this player?\nThis will remove the player from the leaderboard during the next update.\nYou can always re-publish later.")) {
+        try {
+          $vm.players.players[index] = await API.unpublishPlayer(id);
+          Message("Player Unpublished");
+        } catch (e) {
+          MessageError("Error: "+e);
+        }
+      }
+    }
+    (async function() {
+      //API.debug = true;
+      await createVueApp({
+        games:null,
+        players:null
+      },{
+        methods: {
+          "deletePlayer": delete_player,
+          "unpublishPlayer": unpublish_player
+        }
+      });
+      $vm.games = await API.listGames().then(games=>{
+        let gameNames = {};
+        games = games.list;
+        games.forEach(g=>gameNames[g.id]=g.name);
+        return gameNames;
+      });
+      let loadPlayers = async()=>{
+        await API.auth();
+        $vm.players = await API.myPlayers();
+      };
+
+      loadPlayers();
+      API.onLogin(loadPlayers);
+    })();
+  </script>
+  <style>
+    a {
+      color: black;
+    }
+    a.name {
+      font-weight:bold;
+    }
+  </style>
+</head>
+<body>
+
+<a href="/index.html" alt="Home" class="logo-home"><img src="/images/logo-home.png"></a>
+
+<div id="app" v-cloak>
+  <bs-user style="float:right;"></bs-user>
+
+  <h1 v-if="!userLoaded">Loading...</h1>
+  <h1 v-if="userLoaded && user">{{user.name}}</h1>
+  <h1 v-if="userLoaded && !user">You must <span class="button" onclick="API.login()">Login</span> to view this page</h1>
+
+  <div v-if="userLoaded && user">
+    <div v-if="user && players && games">
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2">Game</th>
+            <th rowspan="2">Player</th>
+            <th rowspan="2">Version</th>
+            <th rowspan="2">Last Updated</th>
+            <th colspan="2">Published</th>
+            <th rowspan="2">Action</th>
+          </tr>
+          <tr>
+            <th>Version</th>
+            <th>When</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(p,index) in players.players" v-show="!p.deleted">
+            <td><a :href="'/leaderboard/index.html?'+p.game_id">{{games[p.game_id]}}</a></td>
+            <td><a :href="'/player/index.html?game='+p.game_id+'#'+p.id" class="name">{{p.name}}</a></td>
+            <td>{{p.version}}</td>
+            <td :title="longdate(p.updated_on)">{{ago(p.updated_on)}}</td>
+            <td>{{p.published_version}}</td>
+            <td :title="longdate(p.published_on)">{{ago(p.published_on)}}</td>
+            <td>
+              <input type="button" class="button" value="Delete" @click="deletePlayer(p.id,index)">
+              &nbsp;
+              <input v-if="p.published_on" type="button" class="button" value="Unpublish" @click="unpublishPlayer(p.id,index)">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div v-else>
+      Loading Players...
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
