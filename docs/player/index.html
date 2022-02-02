@@ -57,7 +57,6 @@
           <div class="directory">Test/</div>
           <div class="file" @click="file('test-cases')" :class="{active:view=='test-cases'}"><span v-if="player.tests && player.tests.length" style="float:right;" :class="{testFail:!tests_passed,testPass:tests_passed}">{{tests_passed?"PASS":"FAIL"}}</span>Tests</div>
 <!--          <div class="file" @click="file('test-state')" :class="{active:view=='test-state'}">Move</div>-->
-          <div class="file" @click="file('test-players')" :class="{active:view=='test-players'}">Opponents</div>
 
           <div class="directory">Reference/</div>
           <div class="file" @click="file('docs-game-api')" :class="{active:view=='docs-game-api'}">Game README</hint></div>
@@ -151,24 +150,6 @@
 <!--            <div class="flex-shrink">Output: Player Move</div>-->
 <!--            <div class="flex-grow monaco-editor" id="test_state_output" model="test_state_output" language="json" editor-mode="simple"></div>-->
 <!--          </div>-->
-          <div v-show="when(['test-players'])" id="test-players" style="flex:0 0 250px;" class="flex-vertical console">
-            <div class="flex-shrink smallheader">
-              Opponents
-              <hint position="s">By default, your player plays against itself as you code. You can choose other players if your own to test against instead, or choose a test player from the game, if one exists.<br><br>You cannot test your player against other users during development.</hint>
-            </div>
-            <div class="flex-shrink">
-              Choose the opponent to play against in the game runner as you change code.
-              <br><br>
-              (This is a WIP, currently you can only test against yourself)
-            </div>
-            <div class="flex-grow files">
-              <div class="directory">Your Players/</div>
-              <div class="file active">this player</div>
-
-              <div class="directory">Test Players/</div>
-            </div>
-          </div>
-
           <div v-show="when(['settings'])" id="settings">
             <div>
               <input type="checkbox" v-model="settings.run_on_change"> Auto-run game as you change code in editors
@@ -183,7 +164,23 @@
         <!-- Right Panels -->
         <div class="resizer" data-resize="next" v-show="!popout"></div>
 
-        <div id="match-runner-view" style="flex:0 0 400px;" v-show="not_when(['docs-game-api','docs-player-api']) && !popout"></div>
+        <div id="match-runner-container" class="flex-vertical" style="flex:0 0 400px;" v-show="not_when(['docs-game-api','docs-player-api']) && !popout">
+          <div>Opponent: <select v-model="test_opponent">
+            <optgroup label="My Players">
+              <option value="self">Self (This Player)</option>
+            </optgroup>
+            <optgroup label="Test Opponents">
+              <option v-for="(p,index) in game.players" :value="p.code">{{p.name}}</option>
+            </optgroup>
+          </select>
+          I'm Player #:
+            <select v-model="test_player_number">
+              <option value="0">1</option>
+              <option value="1">2</option>
+            </select>
+          </div>
+          <div style="flex:1;" id="match-runner-view"></div>
+        </div>
         <div style="flex:0 0 40%;" v-show="when(['docs-game-api'])" id="docs-game-api" class="markdown-output"></div>
         <div style="flex:0 0 40%;" v-show="when(['docs-player-api'])" id="docs-player-api" class="markdown-output"></div>
 

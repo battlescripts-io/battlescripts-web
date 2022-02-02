@@ -204,6 +204,14 @@ h1.title {
 .button.large {
     font-size:larger;
 }
+.button.dark {
+    background-color: #393939;
+    color: #666;
+    border-color:#666;
+}
+.button.small {
+    padding:1px 3px;
+}
 a.button {
     text-decoration:none;
     padding:5px 10px;
@@ -213,6 +221,7 @@ a.button {
 .button:hover {
     background-color: #00660c;
     border:1px solid black;
+    color:white;
 }
 .button.disabled {
     background-color:#ccc;

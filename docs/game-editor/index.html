@@ -55,8 +55,8 @@
           <div class="file" @click="file('game-docs')" :class="{active:view=='game-docs'}">README.md</div>
           <div class="file" @click="file('game-player-template')" :class="{active:view=='game-player-template'}">Player Template</div>
 
-          <div class="directory">Test Players/</div>
-          <div class="file" @click="file('game-players')" :class="{active:view=='game-players'}">Test Players</div>
+          <div class="directory">Test Players/ <button @click="addPlayer()" class="button small dark">Add</button></div>
+          <div v-for="(player,index) in game.players" class="file" @click="file('game-players',index)" :class="{active:(view=='game-players' && selectedTestPlayer==index)}">{{game.players[index].name}}</div>
 
           <div class="directory">Renderer/</div>
           <div class="file" @click="file('renderer-code')" :class="{active:view=='renderer-code'}">index.js</div>
@@ -97,9 +97,9 @@
           <div v-show="view=='game-code'" id="game-code" class="monaco-editor full-panel" model="game" attribute="code" language="javascript"></div>
           <div v-show="view=='game-docs'" id="game-documentation" class="monaco-editor" editor-config='{"wordWrap":"on"}' model="game" attribute="documentation" language="markdown"></div>
           <div v-show="view=='game-player-template'" id="game-player-template" class="monaco-editor" model="game" attribute="player_template" language="javascript"></div>
-          <div class="flex-vertical" v-show="view=='game-players'" id="game-test-players">
-            <div id="p1" class="monaco-editor test-player-editor" model="game" attribute="test_players" index="0" language="javascript"></div>
-            <div id="p2" class="monaco-editor test-player-editor" model="game" attribute="test_players" index="1" language="javascript"></div>
+          <div class="flex-vertical" v-if="game.players" v-show="view=='game-players'" id="game-players">
+            <div>Player Title: <input v-model="game.players[selectedTestPlayer].name"> <button v-if="game.players.length>1" @click="deletePlayer(selectedTestPlayer)" class="button small dark">Delete</button></div>
+            <div id="game-player-editor" class="monaco-editor test-player-editor" language="javascript"></div>
           </div>
           <div v-show="view=='renderer-code'" id="renderer-code" class="monaco-editor" model="game" attribute="renderer_code" language="javascript"></div>
           <div v-show="view=='renderer-html'" id="renderer-html" class="monaco-editor" model="game" attribute="renderer_html" language="html"></div>
