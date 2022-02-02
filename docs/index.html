@@ -43,7 +43,7 @@
       // load games async
       API.listGames().then(games=>setVueData('games',games.list));
       await createVueApp();
-      API.fetchData('/leaderboard/leaderboard-top.json').then(lb=>setVueData('leaderboard',lb));
+      API.fetchData('/leaderboard/data/leaderboard-top.json').then(lb=>setVueData('leaderboard',lb));
 
       // Create the demo view
       matchRunner = MatchRunner.create({
