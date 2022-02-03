@@ -136,7 +136,7 @@
         <div style="flex:1;" id="gamedirective" v-show="!error && (tab=='gamedirective')" class="monaco-editor" language="json"></div>
         <div style="flex:1;" id="results" v-show="!error && (tab=='results')" class="monaco-editor" language="json"></div>
         <div style="flex:1;" id="lastmove" v-show="!error && (tab=='lastmove')" class="monaco-editor" language="json"></div>
-        <div style="flex:1;" id="log" v-show="!error && (tab=='log')" class="monaco-editor" language="text"></div>
+        <div style="flex:1;" id="log" v-show="!error && (tab=='log')" class="monaco-editor" language="text" editor-config='{"wordWrap":"on"}'></div>
         <div style="flex:1;" id="Error" v-show="error">{{error}}</div>
       </div>
     </div>
