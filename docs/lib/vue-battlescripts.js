@@ -98,18 +98,27 @@ let createVueApp = async (data,App,mount,callback)=>{
       };
     },
     mounted() {
-      if (typeof API!="undefined") {
+      if (typeof API != "undefined") {
         API.getUser().then(user => {
           //console.log(user);
           if (user) {
             this.$root.user = user
           }
           this.$root.userLoaded = true;
-        },()=>{
+        }, () => {
+          this.$root.userLoaded = true;
+        });
+        API.onLogin(()=>{
           this.$root.userLoaded = true;
         });
       }
-      addEventListener('click',()=>this.expanded=false);
+      addEventListener('click', () => this.expanded = false);
+      // Listen for the LOGIN message from popup, to set state into "Loading"
+      addEventListener('message', m => {
+        if (m && m.data && m.data === "LOGIN") {
+          this.$root.userLoaded = false;
+        }
+      });
     },
     methods: {
       toggle() {
@@ -141,7 +150,7 @@ let createVueApp = async (data,App,mount,callback)=>{
         </div>
       </div>
       <!-- Loading -->
-      <div v-if="!$root.userLoaded">...</div>
+      <div v-if="!$root.userLoaded"><img src="/images/loading-ball.gif"></div>
       <!-- Logged In -->
       <div v-else-if="$root.user" class="user-badge-badge">
         <div class="user-badge-hamburger"><div></div><div></div><div></div></div>
