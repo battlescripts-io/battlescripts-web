@@ -29,7 +29,18 @@ let current_html = null;
 let VueApp = null;
 let $VueData = null;
 $(mount_vue);
-function mount_vue() {
+function handleVueTemplateError(err) {
+  let note ='';
+  if (/TypeError: can't access property "created"/.test(err)) {
+    note = "This is often caused by a typo in or an unknown directive.";
+  }
+  document.body.innerHTML =`
+    <h2>Vue Template Error</h2>
+    <pre>${err}</pre>
+    <p>${note}</p>
+  `;
+}
+async function mount_vue() {
   if (typeof render!="function" && !VueApp) {
     VueApp = Vue.createApp({
       data() {
@@ -38,7 +49,17 @@ function mount_vue() {
     });
   }
   if (VueApp) {
-    $VueData = VueApp.mount(document.body);
+    // There are two ways to handle different template errors
+    // The global errorHandler catches some, and mount() throws some
+    try {
+      VueApp.config.errorHandler = function(err, vm, info) {
+        handleVueTemplateError(err.toString());
+        return false;
+      };
+      $VueData = await VueApp.mount(document.body);
+    } catch(err) {
+      handleVueTemplateError(err.toString());
+    }
   }
 }
 function unmount_vue() {
@@ -88,7 +109,7 @@ function update_css(css) {
   }
   s.textContent = css;
 }
-function update_html(html) {
+async function update_html(html) {
   current_html = html;
   if (VueApp) {
     unmount_vue();
@@ -97,7 +118,7 @@ function update_html(html) {
   if (current_state) {
     update_state(current_state);
   }
-  mount_vue();
+  await mount_vue();
 }
 function update_state(state) {
   current_state = state;
@@ -123,7 +144,7 @@ Message data structure: (all fields optional)
 }
  */
 
-addEventListener('message', function(msg) {
+addEventListener('message', async function(msg) {
   //console.log(`message received in canvas.js`,msg.data);
   if (!validateOrigin(msg)) {
     return;
@@ -135,7 +156,7 @@ addEventListener('message', function(msg) {
       if (!data.hasOwnProperty(type)) { continue; }
       let content = data[type];
       if (type === "html") {
-        update_html(content);
+        await update_html(content);
       }
       if (type === "js") {
         update_js(content);
