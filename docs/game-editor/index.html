@@ -42,8 +42,8 @@
           <button v-else class="button disabled large" >Save</button>
 
         </div>
-        <div v-show="typeof game.id=='number'"><h1>{{game.name}}</h1></div>
-        <div v-show="typeof game.id!='number'"><h1>Create Game</h1></div>
+        <div v-show="typeof game.id=='number'" style="white-space:nowrap;"><h1>{{game.name}}</h1></div>
+        <div v-show="typeof game.id!='number'" style="white-space:nowrap;"><h1>Create Game</h1></div>
       </div>
 
       <div class="content flex-horizontal">

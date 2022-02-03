@@ -43,8 +43,8 @@
           <button v-if="$root.user && !dirty" type="button" class="button disabled large" value="Save">Save</button>
 
         </div>
-        <div v-show="typeof player.id=='number'"><h1>{{player.name}}</h1></div>
-        <div v-show="typeof player.id!='number'"><h1>{{game.name}} Player</h1></div>
+        <div v-show="typeof player.id=='number'" style="white-space:nowrap;"><h1>{{player.name}}</h1></div>
+        <div v-show="typeof player.id!='number'" style="white-space:nowrap;"><h1>{{game.name}} Player</h1></div>
       </div>
 
       <div class="content flex-horizontal">
