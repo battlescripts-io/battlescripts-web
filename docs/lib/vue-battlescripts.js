@@ -147,6 +147,7 @@ let createVueApp = async (data,App,mount,callback)=>{
           <div>{{$root.user.name}}</div>
           <div class="user-badge-menu-item" @click.stop="logout">Logout</div>
           <a class="user-badge-menu-item" href="/me/index.html">My Players</a>
+          <a class="user-badge-menu-item" href="/me/profile.html">Profile</a>
         </div>
       </div>
       <!-- Loading -->

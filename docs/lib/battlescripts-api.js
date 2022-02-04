@@ -425,6 +425,11 @@ const API = (function() {
     },
     getBattlescriptsUser: async function() {
       return await api.fetchAPI('/me',false,{"headers":{Authorization: "Bearer " + auth0JWT}});
+    },
+    saveUserProfile: async function(user){
+      //TODO
+      console.log("Saving in api");
+      console.log(user);
     }
   };
 
