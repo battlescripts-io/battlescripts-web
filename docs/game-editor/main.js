@@ -4,6 +4,7 @@ let data = {
   view: "docs-howto-game",
   popout: false,
   game: {},
+  selectedTestPlayer: 0,
   originalStringifiedGame: null,
   dirty:false,
   settings: {
@@ -15,10 +16,33 @@ let data = {
 // Init Vue
 createVueApp(data, {
   methods: {
-    file: name => {
+    file: (name,index) => {
       $vm.view = name;
+      if (typeof index!="undefined") {
+        $vm.selectedTestPlayer=index;
+      }
+      // Specific logic for selecting test players
+      if (name=='game-players') {
+        // Set the player editor content
+        set_editor_value('game-player-editor', $vm.game.players[$vm.selectedTestPlayer].code);
+      }
       resize_editors();
     },
+    addPlayer: ()=>{
+      $vm.game.players.push({name:"Test Opponent",code:""});
+      $vm.selectedTestPlayer = $vm.game.players.length-1;
+      $vm.view = "game-players";
+    },
+    deletePlayer: (index)=>{
+      let players = $vm.game.players;
+      if (confirm("Delete this player?")) {
+        players.splice(index,1);
+        $vm.selectedTestPlayer--;
+        if ($vm.selectedTestPlayer<0) {
+          $vm.selectedTestPlayer=0;
+        }
+      }
+    }
   },
   computed: {
     saved_ago() {
@@ -69,6 +93,13 @@ async function init() {
   }
   $vm.game = game;
 
+  // If a game doesn't have defined players, put in an empty one
+  if (!game.players) {
+    game.players = [
+      {name:"Default",code:""}
+    ];
+  }
+
   // Configure the matchRunner display area
   matchRunner = MatchRunner.create({
     mount:'#match-runner-view'
@@ -113,12 +144,16 @@ async function init() {
 
   // Capture edits that should trigger updates immediately
   on_editor_change('game-code',setMatchConfig);
-  on_editor_change('p1',setMatchConfig);
-  on_editor_change('p2',setMatchConfig);
+  on_editor_change('game-player-editor',setMatchConfig);
 
   on_editor_change('renderer-code',update_canvas);
   on_editor_change('renderer-html',update_canvas);
   on_editor_change('renderer-css',update_canvas);
+
+  // Capture edits to player editor an update model
+  on_editor_change('game-player-editor',value=>{
+    $vm.game.players[$vm.selectedTestPlayer].code=value;
+  },100);
 
   hide_overlay();
   setMatchConfig();
@@ -140,7 +175,7 @@ function setMatchConfig() {
   try {
     matchRunner.setGameCode(get_editor_value('game-code'));
     matchRunner.setDelay($vm.settings.delay);
-    matchRunner.setPlayers([get_editor_value('p1'),get_editor_value('p2')]);
+    matchRunner.setPlayers([$vm.game.players[0].code, ($vm.game.players[1] ? $vm.game.players[1].code : $vm.game.players[0].code)]);
     if ($vm.settings.run_on_change) {
       matchRunner.start();
     }
@@ -162,20 +197,6 @@ addEventListener('message', function(msg) {
 });
 
 async function save_game() {
-  // // Get the editor contents out and back into the game object
-  // $vm.game.code = editors['game-code'].getValue();
-  // $vm.game.documentation = editors['game-documentation'].getValue();
-  // $vm.game.player_template = editors['game-player-template'].getValue();
-  // $vm.game.renderer_code = editors['renderer-code'].getValue();
-  // $vm.game.renderer_html = editors['renderer-html'].getValue();
-  // $vm.game.renderer_css = editors['renderer-css'].getValue();
-  //
-  // // Hard-coding 2 test players for now. will be modular later.
-  // $vm.game.test_players = [
-  //   editors['p1'].getValue(),
-  //   editors['p2'].getValue()
-  //   ];
-
   try {
     overlay("Saving...");
     let game = Object.assign({}, $vm.game);

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html class="container">
+<head>
+  <title>BattleScripts: User Profile</title>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/theme.css">
+  <script src="/lib/auth0.js"></script>
+  <script src="/lib/battlescripts-api.js"></script>
+  <script src="/lib/vue.js"></script>
+  <script src="/lib/vue-battlescripts.js"></script>
+  <script src="/lib/util.js"></script>
+  <script>
+    async function save_profile() {
+     API.saveUserProfile($vm.user);
+    }
+    (async function() {
+      //API.debug = true;
+      await createVueApp({},{
+        methods: {
+          "saveProfile": save_profile
+        }
+      });
+    })();
+  </script>
+  <style>
+    a {
+      color: black;
+    }
+    a.name {
+      font-weight:bold;
+    }
+    span.username {
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 24px;
+    color: rgb(87, 96, 106);
+}
+
+    div.profile-container {
+      display: flex;
+      flex-direction: column;
+      background-color: white;
+      padding: 1em;
+      margin-top: 80px;
+    }
+    div.profile-contents {
+      order: inherit;
+    }
+    
+    label.profile-data-label {
+      display: block;
+      font-weight: 600;
+      cursor: default;
+    }
+    input.profile-input {
+    padding: 5px 12px;
+    font-size: 14px;
+    line-height: 20px;
+    vertical-align: middle;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    outline: none;
+    min-width: 20em;
+    }
+    div.profile-input {
+      margin-bottom: 1em;
+    }
+    input.full-width {
+      width: 100%;
+    }
+
+    div {
+      display: block;
+    }
+    div.username {
+      margin-bottom: 10px;
+    }
+    button.primary {
+      background-color: rgb(45, 164, 78);
+      color: white;
+      border-radius: 6px;
+      border: 1px solid rgba(27, 31, 36, 0.15);
+      padding: 3px 12px;
+    }
+    button.primary:hover {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.4) 0 0);
+    }
+  </style>
+</head>
+<body>
+<a href="/index.html" alt="Home" class="logo-home"><img src="/images/logo-home.png"></a>
+<div id="app" v-cloak>
+  <bs-user style="float:right;"></bs-user>
+  <h1 v-if="!userLoaded">Loading...</h1>
+  <h1 v-if="userLoaded && !user">You must <span class="button" onclick="API.login()">Login</span> to view this page</h1>
+
+  <div v-if="userLoaded && user">
+    <div class="profile-container">
+        <div class="profile-contents">
+          <div class="username">
+            <span class="username">{{user.name}}</span>
+          </div>
+          <div class="profile-input">
+            <label for="user-nickname" class="profile-data-label">Nickname</label>
+            <input id="user-nickname" class="profile-input" placeholder="Nom de guerre" v-model="user.nickname"/>
+          </div>
+          <div class="profile-input"> 
+            <label for="user-tagline" class="profile-data-label">Tagline</label>
+            <input id="user-tagline" class="profile-input full-width" placeholder="Text to display in leaderboard" v-model="user.tagline"/>
+          </div>
+          <div class="profile-input">
+            <button type="button" class="primary" @click="saveProfile()">Save</button>
+          </div>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

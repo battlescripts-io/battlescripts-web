@@ -133,7 +133,7 @@ html, body {
     margin:5px 5px 3px 10px;
     cursor:pointer;
 }
-.file.active {
+.file.active, .file.active:hover {
     background-color: #254E78;
     color: rgb(174,175,173);
 }

@@ -10,6 +10,8 @@ let data = {
   test_game_state: "{\n\n}",
   test_player_state: "{\n\n}",
   test_state_output: "",
+  test_player_number: 0,
+  test_opponent: "self",
   originalStringifiedPlayer: null,
   dirty:false,
   settings: {
@@ -81,6 +83,17 @@ createVueApp(data,{
         }
       },
       deep:true
+    },
+    test_player_number: {
+      handler(newValue, oldValue) {
+        play_match();
+      }
+    },
+    test_opponent: {
+      handler(newValue,oldValue) {
+        console.log(newValue);
+        play_match();
+      }
     }
   }
 }).then(init);
@@ -187,7 +200,21 @@ async function init() {
 function play_match() {
   if (!$vm || !$vm.loaded) { return; }
   try {
-    matchRunner.setPlayers([get_editor_value('player-code'), get_editor_value('player-code')]);
+    // Setting the player list depends on user options
+    let opponent_code;
+    if ($vm.test_opponent=="self") {
+      opponent_code = get_editor_value('player-code');
+    }
+    else {
+      opponent_code = $vm.test_opponent;
+    }
+    let dev_code = get_editor_value('player-code');
+    if ($vm.test_player_number==0) {
+      matchRunner.setPlayers([dev_code, opponent_code]);
+    }
+    else {
+      matchRunner.setPlayers([opponent_code, dev_code]);
+    }
     matchRunner.setDelay($vm.settings.delay);
     matchRunner.start();
   } catch (e) {

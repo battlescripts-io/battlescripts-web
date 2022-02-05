@@ -6,7 +6,7 @@
     popout: false,
     match_data: {}
   };
-  let leaderboard_data_url = API.getDataPath() + "/leaderboard";
+  let leaderboard_data_url = API.getDataPath() + "/leaderboard/data";
   let matchRunner = MatchRunner.createViewer();
   matchRunner.onpopout = ()=>{
     $vm.popout=true;

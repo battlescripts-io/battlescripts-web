@@ -117,7 +117,7 @@ addEventListener('message', async function(msg) {
           canvas_message.css = value.renderer_css;
           canvas_message.html = value.renderer_html;
           matchController.setGame(value.code);
-          matchController.setPlayers([value.test_players[0], value.test_players[1]]);
+          matchController.setPlayers([value.players[0].code, (value.players[1] ? value.players[1].code : value.players[0].code) ]);
           send_to_canvas = true;
         }
         else if (k==="players") {
