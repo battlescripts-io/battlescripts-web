@@ -280,7 +280,6 @@ function getWorkerPlayerFromCode(js) {
         self.postMessage(null);
       }
     };
-    // Send a message saying I was compiled
 `;
 
   let compilationError = null;

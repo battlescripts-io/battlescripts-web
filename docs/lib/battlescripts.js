@@ -23,13 +23,6 @@
       }
     });
   };
-  // If a player times out once, don't repeatedly call it. Switch it
-  // to be a hard-coded timeout player
-  const timedOutPlayer = {
-    onTurn: function() {
-      return {"error":"Timed out on a previous turn"};
-    }
-  };
 
   const engine = function() {
     let battlescripts = {
@@ -182,13 +175,9 @@
               log(moves);
 
               // Capture any player errors so they can be displayed if needed
-              // If any of the players timed out, make sure they don't time out again
               for (const playerId of Object.keys(moves)) {
                 if (moves[playerId] && moves[playerId].error) {
                   gameLogs.push(`Player ${playerId} error: ${moves[playerId].error}`);
-                }
-                if (moves[playerId] && "timeout"===moves[playerId].error) {
-                  players[playerId] = timedOutPlayer;
                 }
               }
 

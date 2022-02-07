@@ -182,8 +182,10 @@ function createMatchController() {
       startConfig.turnTimeout = 1000;
       battlescripts.match(startConfig).then((matchResults)=>{
         updateResultsDisplay(matchResults.results);
-        startConfig.players.forEach((p)=>{
-          p.terminate();
+        startConfig.players.forEach((p,i)=>{
+          if (p && typeof p.terminate=="function") {
+            p.terminate();
+          }
         });
       });
     } catch (e) {
@@ -191,7 +193,9 @@ function createMatchController() {
       controller.abort();
       isGameOver = true;
       startConfig.players.forEach((p,i)=>{
-        p.terminate();
+        if (p && typeof p.terminate=="function") {
+          p.terminate();
+        }
       });
       throw e;
     }
