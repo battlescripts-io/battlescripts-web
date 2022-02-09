@@ -92,7 +92,7 @@
   <bs-user></bs-user>
   <div v-if="!game.id">Loading...</div>
   <div v-cloak v-show="game.id">
-    <h1 class="title">{ {{game.name}} }</h1>
+    <h1 class="title" style="font-size:5vw;">{ {{game.name}} }</h1>
     <p>Version {{game.version}} by {{game.author_name}}</p>
     <div id="match"></div>
     <p>{{game.description}}</p>
