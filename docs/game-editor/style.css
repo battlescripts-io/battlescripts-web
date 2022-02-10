@@ -1,5 +1,7 @@
+#game-player-editor {
+    flex:1;
+}
 .test-player-editor {
-    height:500px;
     width:100%;
 }
 .details {
