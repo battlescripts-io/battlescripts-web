@@ -140,6 +140,9 @@ const API = (function() {
     getDataPath: (path="")=>{
       return data_root + path;
     },
+    getApiPath: (path="")=>{
+      return api_root + path;
+    },
     getGameImage: (id,size=300)=>{
       return `${data_root}/images/${id}-${size}.png`;
     },

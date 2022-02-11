@@ -30,6 +30,8 @@
 <body>
 
 <div id="app" v-cloak>
+  <input type="button" value="Update Leaderboard" onclick="window.open(API.getApiPath('/updateLeaderboard'))">
+
   <h1>Games</h1>
   <div v-if="data.games">
     <table border="1">
