@@ -2,6 +2,7 @@
 let data = {
   game: {},
   player: {},
+  my_players: [],
   tests_passed: true,
   test_results: [],
   testSelected:null,
@@ -154,6 +155,11 @@ async function init() {
       version: '1.0'
     }
   }
+
+  // Load the user's other players for this game
+  API.myPlayers().then(res=>{
+    $vm.my_players =  (res.players||[]).filter(p=>p.game_id==game_id);
+  });
 
   await init_monaco();
 

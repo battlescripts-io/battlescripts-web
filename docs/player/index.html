@@ -129,27 +129,6 @@
             </div>
 
           </div>
-
-<!--          <div v-show="when(['test-state'])" id="test-state" style="flex:0 0 250px;" class="flex-vertical console">-->
-<!--            <div class="flex-shrink smallheader">-->
-<!--              <input type="button" class="button" value="Run" onClick="test_state()" style="float:right;">-->
-<!--              Move Tester-->
-<!--              <hint position="s">-->
-<!--                <div>Test your player to see what move is made for a specific game state. Use this to debug and fix logic errors when you want your player to make a different move for a given situation, for example.</div>-->
-<!--                <div>Enter the JSON for the game state, or click copy to copy the currently-displayed state value from the game runner panel</div>-->
-<!--                <div>Optional: If your player uses player state, you can enter that as well.</div>-->
-<!--              </hint>-->
-<!--            </div>-->
-<!--            <div class="flex-shrink">-->
-<!--              <span style="float:right;font-weight:normal;font-size:smaller;cursor:pointer;" @click.stop="copyState">copy</span>-->
-<!--              Input: Game State-->
-<!--            </div>-->
-<!--            <div class="flex-grow monaco-editor" id="test_game_state" model="test_game_state" language="json" editor-mode="simple"></div>-->
-<!--            <div class="flex-shrink">Input: Player State</div>-->
-<!--            <div class="flex-grow monaco-editor" id="test_player_state" model="test_player_state" language="json" editor-mode="simple"></div>-->
-<!--            <div class="flex-shrink">Output: Player Move</div>-->
-<!--            <div class="flex-grow monaco-editor" id="test_state_output" model="test_state_output" language="json" editor-mode="simple"></div>-->
-<!--          </div>-->
           <div v-show="when(['settings'])" id="settings">
             <div>
               <input type="checkbox" v-model="settings.run_on_change"> Auto-run game as you change code in editors
@@ -165,14 +144,18 @@
         <div class="resizer" data-resize="next" v-show="!popout"></div>
 
         <div id="match-runner-container" class="flex-vertical" style="flex:0 0 400px;" v-show="not_when(['docs-game-api','docs-player-api']) && !popout">
-          <div>Opponent: <select v-model="test_opponent">
+          <div>
+            <hint>Pick which opponent to play against while you work on your player.<br>By default you play your code against itself. You can also play against any of your other players, or test players defined in the game itself.<br>You cannot test against players from other users (yet). Your chance to play against them comes in the leaderboard tournament matches so publish your best code!</hint>
+            Test Opponent: <select v-model="test_opponent">
             <optgroup label="My Players">
               <option value="self">Self (This Player)</option>
+              <option v-for="p in my_players" :value="p.code">{{p.name}}</option>
             </optgroup>
             <optgroup label="Test Opponents">
               <option v-for="(p,index) in game.players" :value="p.code">{{p.name}}</option>
             </optgroup>
           </select>
+            <br>
           I'm Player #:
             <select v-model="test_player_number">
               <option value="0">1</option>
