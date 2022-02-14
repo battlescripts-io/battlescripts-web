@@ -35,7 +35,7 @@
         <bs-user style="float:right;"></bs-user>
         <div style="float:right;margin-right:75px;" class="buttons">
 
-          <button v-if="game && game.updated_on && (!game.published_on || game.updated_on>game.published_on)" class="button large" onclick="publish()">Publish<div class="note">Saved {{saved_ago}}</div></button>
+          <button v-if="game && game.updated_on" class="button large" onclick="publish()">Publish<div class="note">Saved {{saved_ago}}</div></button>
           <button v-else class="button disabled large">Publish</button>
 
           <button v-if="dirty" class="button large" onclick="save_game()">Save</button>
