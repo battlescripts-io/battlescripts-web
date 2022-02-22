@@ -1,56 +1,258 @@
 /* LAYOUT */
 /* ====== */
-
-html,body {
-    background-color:#fcfcfc;
-    color:#333;
-}
 * {
     box-sizing:border-box !important;
 }
-[v-cloak] { display:none; }
-.no-margin {
-    margin:0;
+:root {
+    --main-color: rgb(37, 16, 61);
+    --accent-color: #8CFF98;
+    --text-color: rgb(245, 245, 245);
+    --highlight-color: #FB3640;
+    --highlight-color2: #CCE6F4;
+    --highlight-color3: #4d00a199
+  }
+
+html {
+    background-color: var(--main-color);
+    box-shadow: inset 50px -10px 75px  var(--highlight-color3)
 }
 
-/* FONTS AND ICONS */
-/* =============== */
-/* fallback */
-/*@font-face {*/
-/*    font-family: 'Material Icons';*/
-/*    font-style: normal;*/
-/*    font-weight: 400;*/
-/*    src: url("/fonts/material-icons.woff2") format('woff2');*/
-/*}*/
-/*.material-icons {*/
-/*    font-family: 'Material Icons';*/
-/*    font-weight: normal;*/
-/*    font-style: normal;*/
-/*    font-size: 24px;*/
-/*    line-height: 1;*/
-/*    letter-spacing: normal;*/
-/*    text-transform: none;*/
-/*    display: inline-block;*/
-/*    white-space: nowrap;*/
-/*    word-wrap: normal;*/
-/*    direction: ltr;*/
-/*    -webkit-font-feature-settings: 'liga';*/
-/*    -webkit-font-smoothing: antialiased;*/
-/*}*/
-
-/* GENERAL */
-/* ======= */
 body {
-    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-family: 'PT Sans', sans-serif;
+    color:var(--text-color);
+    max-width: 1300px;
+    border-radius:20px;
+    /* border:1px solid #ccc; */
+    /* background-color:#EEEED4; */
     margin:10px auto 50px;
     padding:0 30px 50px;
 }
+
 @media screen and (max-width: 800px) {
     body {
         padding:0 10px 50px;
         margin:0;
+        max-width:100%;
+        border:none;
+        border-radius:0;
     }
 }
+
+.title {
+    text-align: left;
+    font-size: 10vw;
+    max-height: 300px;
+    font-weight: 900;
+    letter-spacing: 0px;
+    padding: 0 0 0 12vw;
+    margin: 40vh auto 20vh;
+}
+
+.title > span {
+    font-style: italic;
+    color: rgb(224, 224, 224);
+}
+
+@media screen and (max-width: 800px) {
+    .title {
+        font-size:7vw;
+        line-height:20vh;
+        height:20vh;
+    }
+}
+
+.accent-line {
+    color: var(--accent-color);
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.tag-line-container {
+    font-size: 6vh;
+
+}
+
+.section-container {
+    padding: 0 0 0 12vw;
+    margin: 0 auto 5vh;
+}
+
+.tag-line-row {
+    margin: 10px 0 ;
+}
+
+.alert-container {
+    border: 2px solid var(--highlight-color);
+    background-color:  var(--highlight-color);
+    padding: 20px;
+    border-radius: 0px 20px 20px 20px;
+}
+
+.try-it-now { 
+    /* padding: 0 0 0 12vw; */
+    display: grid;
+    min-width: 500px;
+    margin: 0 auto 5vh;
+    padding: 0 0 0 12vw;
+}
+
+.section-title {
+    font-size: 6vh;
+    font-weight: 900;
+    color: var(--accent-color);
+    margin-top: 10vw;
+}
+
+.leader-board-container {
+    
+}
+
+.error-container{ 
+    margin-bottom: 20px;
+}
+
+.game-container {
+    border: 2px solid var(--highlight-color2);
+    border-radius: 0px 20px 20px 20px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: #1e1e1e;
+}
+
+.game-editor {
+    
+}
+
+#try-it-now-mobile {
+    display:none;
+}
+@media screen and (max-width: 800px) {
+    .leader-board-container {
+        display: none;
+    }
+}
+@media screen and (max-width: 800px) {
+    .try-it-now {
+        display:none;
+    }
+    
+    #try-it-now-mobile {
+        display:block;
+    }
+}
+
+.game-card {
+    /* width:90vw;
+    max-width:550px;
+    margin:15px;
+    padding:5px;
+    border:1px solid #ccc;
+    border-radius:10px;
+    clear:both;
+    display:inline-block; */
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 5vw;
+    /* grid-template-areas: 
+    "thumbnail title"
+    "thumbnail description"
+    "thumbnail links" */
+  }
+
+  .game-card-thumbnail {
+    margin: 10px 30px 10px 10px;
+    grid-area: thumbnail;
+  }
+  .game-card-thumbnail img {
+    width: 100px;
+    height: 100px;
+    -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+    filter: grayscale(100%);
+    transition: .25s;
+  }
+
+  .game-card:hover .game-card-thumbnail img {
+    -webkit-filter: grayscale(0); /* Safari 6.0 - 9.0 */
+    filter: grayscale(0);
+}
+
+  .game-card-title {
+    font-size: 6vw;
+    font-weight: 900;
+    grid-area: title;
+  }
+
+  .game-card-description {
+      grid-area: description;
+  }
+
+  .game-card-links {
+      grid-area: links;
+      display: flex;
+      margin-top: 10px;
+  }
+
+  .detail-button:hover {
+      text-decoration: underline;
+  }
+  .detail-button {
+      color: var(--accent-color);
+      margin: 0 20px 0 0;
+  }
+
+  .game-card-dificulty {
+      margin-top: 5px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+  }
+
+  .dificulty-dot:first-child{
+      margin-left: 5px;
+  }
+
+  .dificulty-dot{
+      width: 10px;
+      height: 10px;
+      background-color: var(--accent-color);
+      border-radius: 50%;
+      margin: 3px;
+  }
+
+  .game-card-leaderboard {
+  }
+
+  .game-card-details a {
+  }
+
+  .game-card-details {
+  }
+
+  @media screen and (max-width: 800px) {
+    .game-card {
+      width: 95vw;
+      margin: 10px 0;
+    }
+    .game-card-thumbnail {
+      width:30vw;
+      height:30vw;
+      float:right;
+      margin:5px 5px 5px 20px;
+    }
+    .game-card-thumbnail img {
+      width: 30vw;
+      height: 30vw;
+    }
+  }
+
+[v-cloak] { display:none; }
+.no-margin {
+    margin: 0;
+}
+
+
+
 .logo-home {
     float:left;
     padding:0;
@@ -61,50 +263,25 @@ body {
 }
 
 /* Container pages are content pages like the index, not editor pages */
-html.container {
-    background-color:#1E1E1E;
-}
-html.container body {
-    max-width:1300px;
-    border:1px solid #ccc;
-    border-radius:20px;
-    background-color:#EEEED4;
-}
-@media screen and (max-width: 800px) {
-    html.container body {
-        max-width:100%;
-        border:none;
-        border-radius:0;
-    }
-}
+
+
+
 table {
     border-collapse:collapse;
-    border:1px solid #666;
+    /* border:1px solid #666; */
+    width: 100%;
 }
 th, td {
-    border:1px solid #666;
-    padding:3px 7px;
+    border-bottom:1px solid #666;
+    padding: 5px 10px;
+    text-align: left;
+}
+
+th {
+    color: var(--accent-color);
 }
 table.noborder, table.noborder td, table.noborder th {
     border:none;
-}
-
-h1.title {
-    text-align:center;
-    font-size:7vw;
-    color:#008F11;
-    z-index:8;
-    line-height:300px;
-    height:300px;
-    max-height:300px;
-    margin:0;
-}
-@media screen and (max-width: 800px) {
-    h1.title {
-        font-size:7vw;
-        line-height:20vh;
-        height:20vh;
-    }
 }
 
 .hint {
@@ -194,8 +371,8 @@ h1.title {
 }
 .button {
     padding:5px 16px;
-    background-color: #008F11;
-    color:white;
+    background-color: var(--accent-color);
+    color:var(--main-color);
     border:1px solid rgba(27, 31, 36, 0.15);
     border-radius:6px;
     display:inline-block;
@@ -216,13 +393,13 @@ h1.title {
 a.button {
     text-decoration:none;
     padding:5px 10px;
-    color:white;
+    /* color:white; */
     margin:3px;
 }
 .button:hover {
-    background-color: #00660c;
-    border:1px solid black;
-    color:white;
+    background-color: var(--highlight-color3);
+    /* border:1px solid black; */
+    /* color:white; */
 }
 .button.disabled {
     background-color:#ccc;
@@ -354,24 +531,27 @@ a.button {
     z-index:9999;
 }
 .messages-message {
-    position:relative;
-    opacity:.8;
-    margin:5px;
-    border-radius:10px;
-    padding:10px 10px;
-    border:1px solid white;
-    background-color: #a5df9e;
-    color:black;
+    margin: 5px;
+    padding: 10px;
+    border: 1px solid white;
+    color: white;
     cursor: pointer;
-    font-family:sans-serif;
-    box-sizing:border-box;
+    font-family: sans-serif;
+    box-sizing: border-box;
+    border: 2px solid ;
+    border-left-width: 10px;
+    border-radius: 0px 20px 20px 20px;
+    border-bottom-width: 5px;
+    /* display: inline-block; */
+    position: relative;
+    border-color: var(--accent-color);
 }
 .messages-message:hover {
     opacity:1;
 }
 .messages-message.messages-error {
-    background-color:#c00;
-    color:white;
+    border-color:var(--highlight-color);
+    /* color:white; */
 }
 .messages-timer {
     height:2px;
