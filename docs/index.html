@@ -7,8 +7,12 @@
   <meta name="og:image" content="https://beta.battlescripts.io/images/social-share3.jpg"/>
   <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/theme.css">
+  
   <script src="/lib/auth0.js"></script>
   <script src="/lib/battlescripts-api.js"></script>
   <script src="/lib/vue.js"></script>
@@ -174,116 +178,61 @@
           }
         }
       };
-      function rain() {
-        // Create a debug panel
-        //debug = document.createElement("div");
-        //debug.id = "rain-debug";
+      // function rain() {
+      //   // Create a debug panel
+      //   //debug = document.createElement("div");
+      //   //debug.id = "rain-debug";
 
-        let manual_timing = [3,15,25,30,32,33,34,35];
-        let min_random_start_timing = Math.max(...manual_timing);
+      //   let manual_timing = [3,15,25,30,32,33,34,35];
+      //   let min_random_start_timing = Math.max(...manual_timing);
 
-        for (let i = 0; i < numberOfStreams; i++) { // 90
-          let trail = document.createElement("div");
-          let trailLength = rand_int(20, code_string.length);
-          let trailStart = rand_int(0,code_string.length-trailLength);
-          let trailCode = code_string.substring(trailStart,trailLength);
+      //   for (let i = 0; i < numberOfStreams; i++) { // 90
+      //     let trail = document.createElement("div");
+      //     let trailLength = rand_int(20, code_string.length);
+      //     let trailStart = rand_int(0,code_string.length-trailLength);
+      //     let trailCode = code_string.substring(trailStart,trailLength);
 
-          let innerhtml = "";
-          for (let char of trailCode) {
-            innerhtml += `<div style="opacity:0;">${char}</div>`;
-          }
-          trail.innerHTML = innerhtml;
-          //debug.innerHTML += `<div class="rain-debug-item" id="rain-debug-${i}">Trail #${i}: <span class="rain-timer" id="timer-${i}"></span> <span class="rain-age" id="age-${i}"></span>`;
+      //     let innerhtml = "";
+      //     for (let char of trailCode) {
+      //       innerhtml += `<div style="opacity:0;">${char}</div>`;
+      //     }
+      //     trail.innerHTML = innerhtml;
+      //     //debug.innerHTML += `<div class="rain-debug-item" id="rain-debug-${i}">Trail #${i}: <span class="rain-timer" id="timer-${i}"></span> <span class="rain-age" id="age-${i}"></span>`;
 
-          trail.id = "trail" + i;
-          trail.style.left = rand_int(0, container.offsetWidth) + "px";
+      //     trail.id = "trail" + i;
+      //     trail.style.left = rand_int(0, container.offsetWidth) + "px";
 
-          let manual_timer = manual_timing[i];
-          let interval = rand_int(100, 300);
-          if (manual_timer) {
-            trail.timer = -manual_timer;
-            trail.style.top="0px";
-            trail.style.fontSize = rand_int(10, 15) + "px";
-            interval = 150;
-          }
-          else {
-            trail.timer = rand_int(-80, -min_random_start_timing);
-            trail.style.top = rand_int(-30, -5) + "px";
-            trail.style.fontSize = rand_int(10, 25) + "px";
-          }
-          container.appendChild(trail);
-          timers[i] = setInterval(updateFunction(i,trail), interval);
-        }
+      //     let manual_timer = manual_timing[i];
+      //     let interval = rand_int(100, 300);
+      //     if (manual_timer) {
+      //       trail.timer = -manual_timer;
+      //       trail.style.top="0px";
+      //       trail.style.fontSize = rand_int(10, 15) + "px";
+      //       interval = 150;
+      //     }
+      //     else {
+      //       trail.timer = rand_int(-80, -min_random_start_timing);
+      //       trail.style.top = rand_int(-30, -5) + "px";
+      //       trail.style.fontSize = rand_int(10, 25) + "px";
+      //     }
+      //     container.appendChild(trail);
+      //     timers[i] = setInterval(updateFunction(i,trail), interval);
+      //   }
 
-        //document.body.appendChild(debug);
-      }
+      //   //document.body.appendChild(debug);
+      // }
       //rain();
     });
   </script>
   <style>
-    .game-card {
-      width:90vw;
-      max-width:550px;
-      margin:15px;
-      padding:5px;
-      border:1px solid #ccc;
-      border-radius:10px;
-      clear:both;
-      display:inline-block;
-    }
-    .game-card-thumbnail {
-      width:200px;
-      height:200px;
-      float:left;
-      margin:10px 30px 10px 10px;
-    }
-    .game-card-thumbnail img {
-      width: 200px;
-      height: 200px;
-    }
-    .game-card-title {
-      font-size:200%;
-    }
-    @media screen and (max-width: 800px) {
-      .game-card {
-        width: 95vw;
-        margin: 10px 0;
-      }
-      .game-card-thumbnail {
-        width:30vw;
-        height:30vw;
-        float:right;
-        margin:5px 5px 5px 20px;
-      }
-      .game-card-thumbnail img {
-        width: 30vw;
-        height: 30vw;
-      }
-    }
+    
 
-    h1 {
-      color:#008F11;
-      font-family:lucida console,monospace;
-      font-size:400%;
-      margin:0;
-    }
 
-    #try-it-now-mobile {
-      display:none;
-    }
-    @media screen and (max-width: 800px) {
-      #try-it-now {
-        display:none;
-      }
-      #try-it-now-mobile {
-        display:block;
-      }
-    }
 
     body {
       padding-top:0;
     }
-    #rain {
+    /* #rain {
       width:100%;
       height:300px;
       position:relative;
@@ -307,15 +256,15 @@
       font-family:monospace;
       margin:0;
       padding:0;
-    }
-    @media screen and (max-width: 800px) {
+    } */
+    /* @media screen and (max-width: 800px) {
       #rain {
         height:20vh;
       }
       #rain:after {
         height: 20vh;
       }
-    }
+    } */
   </style>
 </head>
 <body>
@@ -323,117 +272,152 @@
 <div id="app" v-cloak>
   <bs-user style="float:right;"></bs-user>
 
-  <div style="text-align:center;">
-
-    <div id="rain"><h1 class="title">{BattleScripts}</h1></div>
+  <div>
+    <h1 class="title">{<span>BattleScripts</span>}</h1>
+    <!-- <div id="rain"><h1 class="title">{BattleScripts}</h1></div> -->
 
 <!--    <div style="margin:20px;"><img src="/images/shall_we_play_a_game.png" style="max-height:50px;"></div>-->
 
-    <div style="margin:20px;line-height:150%;">
-      <div>Write javascript code to play games.</div>
-      <div>Defeat your friends. Conquer your co-workers. Top the Leaderboards.</div>
-      <div style="font-weight:bold;">May the best algorithm win.</div>
+    <div class="tag-line-container section-container ">
+      <div class="tag-line-row">Write javascript code to play games.</div>
+      <div class="tag-line-row">Defeat your friends.</div>
+      <div class="tag-line-row">Conquer your co-workers.</div>
+      <div class="tag-line-row">Top the Leaderboards.</div>
+      <div class="accent-line tag-line-row">May the best algorithm win.</div>
     </div>
   </div>
 
-  <div style="margin:10px;padding:10px;border:5px solid #ccc;border-radius:15px;background-color:#ff4b5a;color:white;">
+  <div class="alert-container ">
     <b>This site is in BETA!</b>
     Functionality is still being developed, things may break at random, any players created may be wiped out before official release, etc.<br>
     Check out the evolving <a href="https://docs.google.com/document/d/e/2PACX-1vQam46hu4oJ6BZHkfghyajb4_CXQSyrsoz8eGfq7LSKWpcziVF-OQSKDhm_g7WzDMfotAFyntX1NEJs/pub" target="_blank" style="color:white;font-weight:bold;">TO DO List</a>.<br>
     We would love feedback on <a href="https://www.reddit.com/r/battlescripts/" style="color:white;" target="_blank">/r/battlescripts</a>. Thanks!
   </div>
-
+<!-- 
   <h2>How It Works</h2>
-  <img src="images/how-it-works.png" style="max-width:80%;margin-bottom:30px;">
+  <img src="images/how-it-works.png" style="max-width:80%;margin-bottom:30px;"> -->
 
   <div id="try-it-now-mobile">
     <h2>Try It On Desktop</h2>
     <p>The player development environment is not optimized for mobile. Visit the site on a desktop browser to try coding a Tic-Tac-Toe player, no login required!</p>
   </div>
 
-  <div id="try-it-now">
-    <h2>Try Tic-Tac-Toe</h2>
-    <div style="float:right;margin-left:25px;">
-      <div id="error-container" style="width:750px;"></div>
-      <div>
-        <div style="display:inline-block;">
-          <div class="monaco-editor" editor-mode="simple" editor-config='{"fontSize":12}' id="player" style="width:500px;height:350px;"></div>
-        </div>
-        <div style="width:300px;height:350px;display:inline-block;" id="match"></div>
+  <div id="try-it-now" class="try-it-now">
+    <h2 class="section-title">Try Tic-Tac-Toe</h2>
+    
+    <div id="error-container" class="error-container "></div>
+    <div class="game-container">
+      <div class="game-editor">
+        <div class="monaco-editor" editor-mode="simple" editor-config='{"fontSize":12}' id="player" style="width:500px;height:350px;"></div>
       </div>
+      <div style="width:300px;height:350px;display:inline-block;" id="match"></div>
     </div>
-    <p>Here's a playground to give you a feel for how this works.</p>
+    
+    <!-- <p>Here's a playground to give you a feel for how this works.</p>
     <p><b>You are X</b> and you go first.</p>
     <p>Can you edit the player code on the left so you <b>never</b> lose?</p>
-    <br style="clear:both;">
+    <br style="clear:both;"> -->
+    <div class="leader-board-container">
+
+      <h2 class="section-title">Overall Top 10 User Leaderboard</h2>
+      
+      <div v-if="data.leaderboard">
+        <p>Last Updated {{ago(data.leaderboard.updated_on)}}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name</th>
+              <th># Players</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="user in data.leaderboard.leaderboard">
+              <td>{{user.rank}}</td>
+              <td>{{user.author_name}}</td>
+              <td>{{user.games}}</td>
+              <td>{{user.score}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
-  <h2>Overall Top 10 User Leaderboard</h2>
+  
+  <div class="games-section section-container">
 
-  <div v-if="data.leaderboard">
-    <p>Last Updated {{ago(data.leaderboard.updated_on)}}</p>
-    <table>
-      <thead>
-      <tr>
-        <th>Rank</th>
-        <th>Name</th>
-        <th># Players</th>
-        <th>Score</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr v-for="user in data.leaderboard.leaderboard">
-        <td>{{user.rank}}</td>
-        <td>{{user.author_name}}</td>
-        <td>{{user.games}}</td>
-        <td>{{user.score}}</td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+  
+    
+  <h2 class="section-title">Games</h2>
 
-  <h2>Games</h2>
-
-  <p>New games will be released regularly, so stay tuned. Lots of new games are coming!</p>
+  <!-- <p>New games will be released regularly, so stay tuned. Lots of new games are coming!</p> -->
 
   <div v-cloak v-show="loaded">
     <div v-if="!data.games">Loading Games...</div>
     <div v-if="data.games">
       <div v-for="game in data.games" class="game-card">
-        <div class="game-card-title">{{game.name}}</div>
         <div class="game-card-thumbnail"><img :src="data_url+'/images/'+game.id+'-300.png'"></div>
+        <div class="game-card-details-container">
+        <div class="game-card-title">{{game.name}}</div>
         <div class="game-card-description">{{game.description}}</div>
-        <div class="game-card-details"><a :href="'/game/index.html?'+game.id" class="button">Learn More</a></div>
-        <div class="game-card-leaderboard"><a :href="'/leaderboard/index.html?'+game.id" class="button">View Leaderboard</a></div>
-        <div class="game-card-create-player"><a :href="'/player/index.html?game='+game.id" class="button">Create Player</a></div>
-        <div v-if="game.difficulty">Difficulty: <img :src="'/images/difficulty-'+game.difficulty+'.png'" style="height:50px;"></div>
-        <br style="clear:both;">
+        <div class="game-card-links">
+          <div class="game-card-details">
+            <a :href="'/game/index.html?'+game.id" class="detail-button">Learn More</a>
+          </div>
+          <div class="game-card-leaderboard">
+            <a :href="'/leaderboard/index.html?'+game.id" class="detail-button">View Leaderboard</a>
+          </div>
+          <div class="game-card-create-player">
+            <a :href="'/player/index.html?game='+game.id" class="detail-button">Create Player</a>
+          </div>
+
+        </div>
+        <div class="game-card-dificulty" v-if="game.difficulty">
+          Difficulty:
+          <div class="dificulty-dot" v-for="difficulty in game.difficulty"></div>
+           
+          <!-- <img :src="'/images/difficulty-'+game.difficulty+'.png'" style="height:50px;"> -->
+        </div>
+        </div>
+        
       </div>
     </div>
   </div>
+  </div>
+<!-- 
+  <br style="clear:both;"/> -->
 
-  <br style="clear:both;"/>
+  <div class="section-container">
 
-  <h2>Create A Game</h2>
+  <h2 class="section-title">Create A Game</h2>
 
   <p>Check out the Game Editor to see how games are built. There are a lot more moving pieces to a Game than there is in a Player.</p>
   <p>You won't be able to Publish a game for others to play, but you can see how it works!</p>
 
   <a href="/game-editor/index.html" class="button">Open Game Editor</a>
 
-  <h2>Support &amp; User Community</h2>
+  <h2 class="section-title">Support &amp; User Community</h2>
 
-  <p><img src="/images/reddit.png" style="float:left;margin:10px;"><img src="/images/discord.png" style="float:left;margin:10px;"> Check out <a class="button" href="https://www.reddit.com/r/battlescripts/" target="_blank">/r/battlescripts</a> or <a class="button" href="https://discord.gg/CDcdb9Vqe3" target="_blank">Discord</a> for support, questions, ideas, feedback, etc.<br style="clear:both;"></p>
+  <div>
+    <img src="/images/reddit.png" style="margin:10px;">
+    <img src="/images/discord.png" style="margin:10px;"> 
+    <div>
+      Check out <a class="button" href="https://www.reddit.com/r/battlescripts/" target="_blank">/r/battlescripts</a> or <a class="button" href="https://discord.gg/CDcdb9Vqe3" target="_blank">Discord</a> for support, questions, ideas, feedback, etc.<br style="clear:both;">
+      </div>
+      </div>
 
-  <h2>Behind The Scenes</h2>
+  <h2 class="section-title">Behind The Scenes</h2>
 
   <p>Check out <a class="button" href="how-it-works/index.html">How It Works</a> for an overview of the Serverless architecture that drives this site.</p>
 
-  <h2>Contribute!</h2>
+  <h2 class="section-title">Contribute!</h2>
 
-  <p><img src="/images/github.png" style="float:left;margin:10px;"> The core BattleScripts engine module and the site are public repos at <a class="button" href="https://github.com/battlescripts-io">GitHub/battlescripts-io</a>.<br>The server-side API is private for now.<br>The core engine is implementation-agnostic and is available as a stand-alone <a href="https://www.npmjs.com/package/battlescripts" target="blank">NPM Module</a>.</p>
+  <p><img src="/images/github.png" style="float:left;margin:10px;"> The core BattleScripts engine module and the site are public repos at <a class="button" href="https://github.com/battlescripts-io">GitHub/battlescripts-io</a>.<br>The server-side API is private for now.<br>The core engine is implementation-agnostic and is available as a stand-alone <a class="button" href="https://www.npmjs.com/package/battlescripts" target="blank">NPM Module</a>.</p>
 
-  <br style="clear:both;">
+</div>
+
 </div>
 
 </body>
